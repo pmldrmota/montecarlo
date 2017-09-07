@@ -1,0 +1,1 @@
+g++ -c -std=c++11 -O source/mc.cpp -o release/obj/mc.o
