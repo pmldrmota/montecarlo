@@ -14,8 +14,10 @@ private:
 
 public:
 	mc(unsigned int dim);
+	unsigned int dimension();
 	void ret_rdvec(std::ostream &out);
 	void set_rdvec();
+	std::vector<double> gen_rdvec();
 };
 
 #endif // !_mc_class_h

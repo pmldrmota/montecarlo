@@ -3,6 +3,7 @@
 mc::mc(unsigned int dim) : dim(dim) {
 	rdvec.resize(dim);
 }
+unsigned int mc::dimension() { return dim; }
 void mc::set_rdvec() { 
 	unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
 	std::mt19937 gen(seed1);
@@ -19,4 +20,8 @@ void mc::ret_rdvec(std::ostream &out) {
 		if (it != rdvec.back()) out << ", ";
 	}
 	out << ")";
+}
+std::vector<double> mc::gen_rdvec() {
+	set_rdvec();
+	return rdvec;
 }
