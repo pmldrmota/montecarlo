@@ -1,11 +1,9 @@
 #include "mc.hpp"
-#include <iostream>
-#include "Windows.h"
 
 int main() {
-	mc inst(1);
-	std::cout << inst.ret_rd() << std::endl;
+	mc inst(6);
+	inst.set_rdvec();
+	inst.ret_rdvec(std::cout);
 
-	system("pause");
 	return 0;
 }
