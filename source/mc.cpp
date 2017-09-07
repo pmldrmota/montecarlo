@@ -19,9 +19,20 @@ void mc::ret_rdvec(std::ostream &out) {
 		out << it;
 		if (it != rdvec.back()) out << ", ";
 	}
-	out << ")";
+	out << ")" << std::endl;
 }
-std::vector<double> mc::gen_rdvec() {
-	set_rdvec();
-	return rdvec;
+std::vector<double> mc::get_rdvec() { return rdvec; }
+double mc::l2_norm(const std::vector<double> &vec) {
+		double accum = 0.;
+		for (double it : vec) {
+			accum += it * it;
+		}
+		return std::sqrt(accum);
+}
+double mc::l2_norm_rdvec() {
+	double accum = 0.;
+	for (double it : rdvec) {
+		accum += it * it;
+	}
+	return std::sqrt(accum);
 }
