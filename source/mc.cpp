@@ -1,38 +1,22 @@
 #include "mc.hpp"
 
-mc::mc(const unsigned int dim, const chain_t update_type) : dim(dim), update_type(update_type) {
-	rdvec.resize(dim);
-	update_rdvec(uncorrelated);	// starting point
+mc::mc(const unsigned int dim) : dim(dim) {
+	x.resize(dim);
 }
 unsigned int mc::dimension() { 
 	return dim; 
 }
-void mc::update_rdvec() {
-	update_rdvec(update_type);
-}
-void mc::update_rdvec(chain_t type) {
-	switch (type)
-	{
-	case uncorrelated:
-		for (auto &it : rdvec) it = random_number.get();
-		break;
-	case metropolis_hastings:
-		break;
-	case gibbs:
-		break;
-	}
-}
-void mc::ret_rdvec(std::ostream &out) {
-	if (rdvec.empty()) return;
+void mc::ret_x(std::ostream &out) {
+	if (x.empty()) return;
 	out << "(";
-	for (auto it : rdvec) {
+	for (auto it : x) {
 		out << it;
-		if (it != rdvec.back()) out << ", ";
+		if (it != x.back()) out << ", ";
 	}
 	out << ")" << std::endl;
 }
-std::vector<double> mc::get_rdvec() { 
-	return rdvec; 
+std::vector<double> mc::get_x() { 
+	return x; 
 }
 double mc::l2_norm(const std::vector<double> &vec) {
 		double accum = 0.;
@@ -41,9 +25,9 @@ double mc::l2_norm(const std::vector<double> &vec) {
 		}
 		return std::sqrt(accum);
 }
-double mc::l2_norm_rdvec() {
+double mc::l2_norm_x() {
 	double accum = 0.;
-	for (double it : rdvec) {
+	for (double it : x) {
 		accum += it * it;
 	}
 	return std::sqrt(accum);

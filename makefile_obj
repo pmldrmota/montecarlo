@@ -1,2 +1,2 @@
 g++ -c -std=c++11 -O source/mc.cpp -o release/obj/mc.o
-g++ -c -std=c++11 -O source/random.cpp -o release/obj/random.o
+g++ -c -std=c++11 -O source/rd.cpp -o release/obj/rd.o
