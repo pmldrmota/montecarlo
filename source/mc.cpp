@@ -2,15 +2,11 @@
 
 mc::mc(unsigned int dim) : dim(dim) {
 	rdvec.resize(dim);
+	gen.seed(std::chrono::system_clock::now().time_since_epoch().count());
 }
 unsigned int mc::dimension() { return dim; }
-void mc::set_rdvec() { 
-	unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
-	std::mt19937 gen(seed1);
-	std::uniform_real_distribution<double> distribution(0, 1);
-	auto dice = std::bind(distribution, gen); 
-	
-	for (auto &it : rdvec) it = dice();
+void mc::update_rdvec() {	
+	for (auto &it : rdvec) it = distribution(gen);
 }
 void mc::ret_rdvec(std::ostream &out) {
 	if (rdvec.empty()) return;
