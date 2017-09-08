@@ -1,12 +1,26 @@
 #include "mc.hpp"
 
-mc::mc(unsigned int dim) : dim(dim) {
+mc::mc(const unsigned int dim, const chain_t update_type) : dim(dim), update_type(update_type) {
 	rdvec.resize(dim);
-	gen.seed(std::chrono::system_clock::now().time_since_epoch().count());
+	update_rdvec(uncorrelated);	// starting point
 }
-unsigned int mc::dimension() { return dim; }
-void mc::update_rdvec() {	
-	for (auto &it : rdvec) it = distribution(gen);
+unsigned int mc::dimension() { 
+	return dim; 
+}
+void mc::update_rdvec() {
+	update_rdvec(update_type);
+}
+void mc::update_rdvec(chain_t type) {
+	switch (type)
+	{
+	case uncorrelated:
+		for (auto &it : rdvec) it = random_number.get();
+		break;
+	case metropolis_hastings:
+		break;
+	case gibbs:
+		break;
+	}
 }
 void mc::ret_rdvec(std::ostream &out) {
 	if (rdvec.empty()) return;
@@ -17,7 +31,9 @@ void mc::ret_rdvec(std::ostream &out) {
 	}
 	out << ")" << std::endl;
 }
-std::vector<double> mc::get_rdvec() { return rdvec; }
+std::vector<double> mc::get_rdvec() { 
+	return rdvec; 
+}
 double mc::l2_norm(const std::vector<double> &vec) {
 		double accum = 0.;
 		for (double it : vec) {

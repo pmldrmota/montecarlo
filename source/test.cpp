@@ -2,7 +2,7 @@
 #include <iostream>
 
 int main() {
-	mc inst(2);
+	mc inst(2, uncorrelated);
 	int drinnen{ 0 }, max;
 	std::cout << "Anzahl Punkte: ";
 	std::cin >> max;
