@@ -19,6 +19,12 @@ unsigned int mc::dimension() {
 unsigned int mc::get_step_nr() {
 	return step_nr;
 }
+std::pair<double, double> mc::get_limits(const unsigned int d) {
+	return limits.at(d);
+}
+double mc::get_span(const unsigned int d) {
+	return spans.at(d);
+}
 double mc::get_volume() {
 	return volume;
 }

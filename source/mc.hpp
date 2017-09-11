@@ -43,6 +43,8 @@ public:
 // RETURN VARIABLES
 	unsigned int dimension();		// returns dim
 	unsigned int get_step_nr();		// returns nr_steps
+	std::pair<double, double> get_limits(const unsigned int d);	// return limits of dimension d
+	double get_span(const unsigned int d);	// return span of dimension d
 	double get_volume();	// returns volume
 	std::vector<double> get_x();	// returns x
 	double get_x(const unsigned int pos);	// returns pos'th element of x

@@ -16,7 +16,7 @@ int main() {
 
 	rd inst(lims);
 
-	double accum{ 0 };
+	double eval, accum{ 0 }, sqares{ 0 };
 	int max;
 	std::cout << "Anzahl Punkte: ";
 	std::cin >> max;
@@ -24,9 +24,13 @@ int main() {
 
 	for (int i = 0; i < max; i++) {
 		inst.update();
-		accum += f(inst);
+		eval = f(inst);
+		accum += eval;
+		sqares += eval*eval;
 	}
 	double integral = inst.get_volume()*accum / max;
+	double variance = (inst.get_volume()*inst.get_volume() * sqares / max - integral*integral) / max;
 	std::cout << "Integral ~ " << integral << std::endl;
+	std::cout << "Varianz ~ " << variance << std::endl;
 	return 0;
 }
