@@ -2,18 +2,18 @@
 #define _rd_hpp_
 
 #include <random>
-#include <chrono>		// seed
+#include <tuple>
+#include <vector>
 #include "mc.hpp"
 
 class rd : public mc {
 private:
-	std::mt19937 gen;
 	std::uniform_real_distribution<double> distribution;
-	double get();
+	double get(const unsigned int i);
 
 public:
 	rd(const unsigned int dim);
-	rd(const unsigned int dim, const unsigned seed);	// constructor with user-defined seed
+	rd(const std::vector< std::pair<double, double> > &lims);
 	void update();				// generates a new random vector
 };
 

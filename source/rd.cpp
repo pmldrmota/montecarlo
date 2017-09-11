@@ -1,16 +1,16 @@
 #include "rd.hpp"
 
 rd::rd(const unsigned int dim) : mc(dim) {
-	gen.seed(std::chrono::system_clock::now().time_since_epoch().count()); 
-	update();
+	fill_x(0.0);	// set start point to origin
 }
-rd::rd(const unsigned int dim, const unsigned seed1) : mc(dim) {
-	gen.seed(seed1);
-	update();
+rd::rd(const std::vector< std::pair<double, double> > &lims) : mc(lims) {
+	fill_x(0.0);	// set start point to origin
 }
 void rd::update() {
-	for (auto &it : x) it = get();
+	for (int i = 0; i < x.size(); i++) x.at(i) = get(i);
+	step_nr++;
 }
-double rd::get() {
-	return distribution(gen);
+double rd::get(const unsigned int i) {
+	std::pair<double, double> limit = limits.at(i);
+	return limit.first+spans.at(i)*distribution(gen);
 }
