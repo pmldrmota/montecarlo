@@ -1,36 +1,21 @@
-#include "rd.hpp"
 #include <iostream>
-#include <tuple>
 #include <vector>
-#include <cmath>
-
-double f(rd &X) {
-	return X.get_x(0)*X.get_x(1)*X.get_x(1)*std::exp(X.get_x(2));	// integrand
-}
+#include <tuple>
+#include "metrop.hpp"
 
 int main() {
 	std::vector<std::pair<double, double>> lims;
-	lims.push_back(std::pair<double, double>(0, 2));
-	lims.push_back(std::pair<double, double>(-1, 1));
-	lims.push_back(std::pair<double, double>(0, 3));
+	lims.push_back(std::pair<double, double>(0, 10));
 
-	rd inst(lims);
+	metrop inst(lims);
+	inst.set_proposal_width(2);
 
-	double eval, accum{ 0 }, sqares{ 0 };
-	int max;
-	std::cout << "Anzahl Punkte: ";
-	std::cin >> max;
-	std::cout << std::endl;
-
-	for (int i = 0; i < max; i++) {
+	inst.ret_x(std::cout);
+	for (int i = 0; i < 10; i++) {
 		inst.update();
-		eval = f(inst);
-		accum += eval;
-		sqares += eval*eval;
+		std::cout << inst.get_step_nr() << std::endl;
+		inst.ret_x(std::cout);
+		std::cout << std::endl;
 	}
-	double integral = inst.get_volume()*accum / max;
-	double variance = (inst.get_volume()*inst.get_volume() * sqares / max - integral*integral) / max;
-	std::cout << "Integral ~ " << integral << std::endl;
-	std::cout << "Varianz ~ " << variance << std::endl;
 	return 0;
 }

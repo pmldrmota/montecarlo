@@ -1,2 +1,3 @@
 g++ -c -std=c++11 -O source/mc.cpp -o release/obj/mc.o
 g++ -c -std=c++11 -O source/rd.cpp -o release/obj/rd.o
+g++ -c -std=c++11 -O source/metrop.cpp -o release/obj/metrop.o
