@@ -56,11 +56,7 @@ void mc::fill_x(const double val) {
 	std::fill(x.begin(), x.end(), val);
 }
 double mc::l2_norm_x() {
-	double accum = 0.;
-	for (double it : x) {
-		accum += it * it;
-	}
-	return std::sqrt(accum);
+	return l2_norm(x);
 }
 void mc::complement_space_vars() {
 	// set spans
@@ -102,9 +98,6 @@ std::vector<double> operator-(const std::vector<double>& v1, const std::vector<d
 	return y;
 }
 double l2_norm(const std::vector<double> &vec) {
-	double accum = 0.;
-	for (double it : vec) {
-		accum += it * it;
-	}
-	return std::sqrt(accum);
+	double sq = std::inner_product(vec.begin(), vec.end(), vec.begin(), 0.0);
+	return std::sqrt(sq);
 }

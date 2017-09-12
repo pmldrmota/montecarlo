@@ -19,6 +19,7 @@
 #include <vector>
 #include <tuple>
 #include <cmath>
+#include <numeric>
 #include <random>
 #include <chrono>		// seed
 
