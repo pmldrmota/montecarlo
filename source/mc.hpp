@@ -34,6 +34,7 @@ protected:
 // ALGORITHM VARIABLES
 	unsigned int step_nr;	// number of steps already done
 	std::vector<double> x;	// contains current position
+	std::vector<std::vector<double>> trace;	// contains all positions since construction
 // RANDOM GENERATOR VARIABLES
 	std::mt19937 gen;		// random number generator needed for all distributions
 
@@ -49,11 +50,11 @@ public:
 	double get_volume();	// returns volume
 	std::vector<double> get_x();	// returns x
 	double get_x(const unsigned int pos);	// returns pos'th element of x
+	std::vector<std::vector<double>> get_trace();	// returns trace
+	std::vector<double> get_trace(const unsigned int i);	// returns i'th position of the trace
 // PRINT FUNCTIONS
 	void ret_x(std::ostream &out);	// writes vector to screen
 // VECTOR FUNCTIONS
-	void set_x(const std::vector<double> &new_x);	// sets x manually (eg in the beginning)
-	void fill_x(const double val);	// fills x with copies of val
 	double l2_norm_x();				// calculates l2-norm of x
 };
 

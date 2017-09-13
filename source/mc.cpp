@@ -34,6 +34,12 @@ std::vector<double> mc::get_x() {
 double mc::get_x(const unsigned int pos) {
 	return x.at(pos);
 }
+std::vector<std::vector<double>> mc::get_trace() {
+	return trace;
+}
+std::vector<double> mc::get_trace(const unsigned int i) {
+	return trace.at(i);
+}
 void mc::ret_x(std::ostream &out) {
 	if (x.empty()) return;
 	out << "(";
@@ -42,18 +48,6 @@ void mc::ret_x(std::ostream &out) {
 		if (it != x.back()) out << ", ";
 	}
 	out << ")" << std::endl;
-}
-void mc::set_x(const std::vector<double> &new_x) {
-	if (new_x.size() != dim) {
-		std::cerr << "vector passed to set_x has wrong size." << std::endl;
-		return;
-	}
-	int i{ 0 };
-	for (auto &it : x) it = new_x.at(i++);
-	step_nr++;
-}
-void mc::fill_x(const double val) {
-	std::fill(x.begin(), x.end(), val);
 }
 double mc::l2_norm_x() {
 	return l2_norm(x);

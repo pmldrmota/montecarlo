@@ -1,10 +1,10 @@
 #include "rd.hpp"
 
 rd::rd(const unsigned int dim) : mc(dim) {
-	fill_x(0.0);	// set start point to origin
+	std::fill(x.begin(), x.end(), 0.0);	// set start point to origin
 }
 rd::rd(const std::vector< std::pair<double, double> > &lims) : mc(lims) {
-	fill_x(0.0);	// set start point to origin
+	std::fill(x.begin(), x.end(), 0.0);	// set start point to origin
 }
 void rd::update() {
 	for (int i = 0; i < x.size(); i++) x.at(i) = get(i);
