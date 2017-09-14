@@ -2,11 +2,15 @@
 // Monte Carlo Class
 // ----------
 //
-// taking the dimension of the space and the algorithm to be used for the walker
-//	- randomly distributed points
-//	- metropolis-hastings
-//	- gibbs
-// sequentially returns sampling points in the space
+// sets up the space with dimension dim and limits and provides basic functionality as
+// - the current position in space
+// - the number of steps already taken
+// - a history of all previous positions (excl. x)
+// - a random number generator
+// - autocorrelation function that computes the value of autocorrelation of the trace with user-defined lag
+// - function that calculates the l2-norm of the current x
+//
+// does not contain any update mechanism!
 //
 //----------
 // Author: Peter Drmota, BSc
@@ -56,13 +60,17 @@ public:
 	void ret_x(std::ostream &out);	// writes vector to screen
 // VECTOR FUNCTIONS
 	double l2_norm_x();				// calculates l2-norm of x
+// DIAGNOSTIC FUNCTIONS
+	double autocorrelation(const unsigned int k);		// evaluates the empirical autocorrelation of the trace with lag k
 };
 
 // VECTOR OPERATORS AND FUNCTIONS
 std::vector<double> operator*(const std::vector<double>& v, double alfa);
 std::vector<double> operator*(double alfa, const std::vector<double>& v);
+double operator*(const std::vector<double>& v1, const std::vector<double>& v2);
 std::vector<double> operator+(const std::vector<double>& v1, const std::vector<double>& v2);
 std::vector<double> operator-(const std::vector<double>& v1, const std::vector<double>& v2);
 double l2_norm(const std::vector<double> &vec);	// calculates l2-norm of vector
+double mean(const std::vector<double> &vec);	// calculates the algebraic mean of a vector
 
 #endif // !_mc_hpp_
