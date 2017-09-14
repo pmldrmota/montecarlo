@@ -1,32 +1,42 @@
 #include <iostream>
-#include <iomanip>
 #include <vector>
 #include <tuple>
-#include <map>
-#include <algorithm> // std::max_element
 #include "inference.hpp"
 
-bool compare(const std::pair<unsigned int, unsigned int>&a, const std::pair<unsigned int, unsigned int>&b)
-{
-	return a.second<b.second;
-}
+void generate_observations(inference &inst, const int n, dist_type type, double a = 0.0, double b = 1.0) {
+	std::mt19937 gen;
+	std::uniform_real_distribution<double> uniform_dist(a, b);
+	std::normal_distribution<double> normal_dist(a, b);
+	std::exponential_distribution<double> exp_dist(a);
+	std::chi_squared_distribution<double> chi_sq_dist(a);
+	std::cauchy_distribution<double> cauchy_dist(a, b);
+	std::poisson_distribution<int> poisson_dist(a);
 
-std::map<unsigned int, unsigned int> histogram(const unsigned int n_bins, inference &inst, const unsigned int var) {
-	std::vector<double> values, point;
-	for (int i = 0; i < inst.get_step_nr(); i++) {
-		point = inst.get_trace(i);
-		values.push_back(point.at(var));
+	switch (type)
+	{
+	case uniform:
+		for (int i = 0; i < n; i++) inst.add_observation(std::vector<double>{uniform_dist(gen)});
+		break;
+	case normal:
+		for (int i = 0; i < n; i++) inst.add_observation(std::vector<double>{normal_dist(gen)});
+		break;
+	case logistic:
+		break;
+	case exponential:
+		for (int i = 0; i < n; i++) inst.add_observation(std::vector<double>{exp_dist(gen)});
+		break;
+	case chi_squared:
+		for (int i = 0; i < n; i++) inst.add_observation(std::vector<double>{chi_sq_dist(gen)});
+		break;
+	case lorentz:
+		for (int i = 0; i < n; i++) inst.add_observation(std::vector<double>{cauchy_dist(gen)});
+		break;
+	case poisson:
+		for (int i = 0; i < n; i++) inst.add_observation(std::vector<double>{1.0*poisson_dist(gen)});
+		break;
+	default:
+		break;
 	}
-	double a{ inst.get_limits(var).first };
-	double span{ inst.get_span(var) };
-
-	std::map<unsigned int, unsigned int> hist;
-	int m;
-	for (auto it : values) {
-		m = n_bins*((it - a) / span);
-		++hist[m];
-	}
-	return hist;
 }
 
 int main() {
@@ -44,39 +54,15 @@ int main() {
 
 	inference inst(lims);
 	inst.set_proposal_width(3);
+	generate_observations(inst, n, normal, -4, 3);
 
-	std::mt19937 gen;
-	std::normal_distribution<double> gaussverteilung(3, 1);
-	std::uniform_real_distribution<double> gleichverteilung(-10, 10);
-	std::exponential_distribution<double> exponentialverteilung(1);
-	for (int i = 0; i < n; i++) {
-		inst.add_observation(std::vector<double>{gaussverteilung(gen)});
-	}
+	for (int i = 0; i < max; i++) inst.update();
 
-	for (int i = 0; i < max; i++) {
-		inst.update();
-	}
-
-	// erstelle histogramm von mu
+	unsigned int bins{ 10 };
 	std::cout << "Verteilung von Mu: " << std::endl;
-	unsigned int von_dim{ 0 }, bins{ 20 };
-	std::map<unsigned int, unsigned int> hist = histogram(bins, inst, von_dim);
-	int max_count = std::max_element(hist.begin(), hist.end(), compare)->second;
-	for (auto it : hist) {
-		std::cout << std::fixed << std::setprecision(2) << inst.get_limits(von_dim).first + (2 * it.first + 1)*inst.get_span(von_dim) / (2 * bins) << "\t" << it.second << "\t";
-		for (int i = 0; i < (1.0*it.second / max_count) * 10; i++) std::cout << "M";
-		std::cout << std::endl;
-	}
-	// erstelle histogramm von sigma
+	inst.print_histogram(std::cout, bins, 0);
 	std::cout << std::endl << "Verteilung von Sigma: " << std::endl;
-	von_dim = 1;
-	bins = 20;
-	hist = histogram(bins, inst, von_dim);
-	max_count = std::max_element(hist.begin(), hist.end(), compare)->second;
-	for (auto it : hist) {
-		std::cout << std::fixed << std::setprecision(2) << inst.get_limits(von_dim).first + (2 * it.first + 1)*inst.get_span(von_dim) / (2 * bins) << "\t" << it.second << "\t";
-		for (int i = 0; i < (1.0*it.second / max_count) * 10; i++) std::cout << "S";
-		std::cout << std::endl;
-	}
+	inst.print_histogram(std::cout, bins, 1);
+
 	return 0;
 }

@@ -8,7 +8,7 @@
 #include <tuple>
 # define PI           3.14159265358979323846  /* pi */
 
-enum dist_type { uniform = 0, normal = 1 };
+enum dist_type { uniform, normal, logistic, exponential, chi_squared, lorentz, poisson };
 
 class inference : public mcmc {
 private:
