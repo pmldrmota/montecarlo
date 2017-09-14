@@ -19,15 +19,15 @@ void mcmc::starting_point() {
 void mcmc::propose() {
 	y = x;
 }
-void mcmc::update(const std::vector<std::vector<double>> &observations) {
+void mcmc::update() {
 	do {
 		propose();
 	} while (!y_inside_space());
-	if (success(observations)) x = y;
+	if (success()) x = y;
 	step_nr++;
 	trace.push_back(x);
 }
-bool mcmc::success(const std::vector<std::vector<double>> &observations) {
+bool mcmc::success() {
 	return true;
 }
 bool mcmc::y_inside_space() {

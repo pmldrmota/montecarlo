@@ -23,7 +23,7 @@ std::map<unsigned int, unsigned int> histogram(const unsigned int n_bins, infere
 	std::map<unsigned int, unsigned int> hist;
 	int m;
 	for (auto it : values) {
-		m = n_bins*((it - a) / span);
+		m = n_bins*((it-a) / span);
 		++hist[m];
 	}
 	return hist;

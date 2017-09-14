@@ -1,17 +1,7 @@
 #include "inference.hpp"
 
-inference::inference(const unsigned int dim) : mcmc(dim), proposal_width(1.0) {
-	prior.resize(dim);
-}
-inference::inference(const std::vector< std::pair<double, double> > &lims) : mcmc(lims), proposal_width(1.0) {
-	prior.resize(dim);
-}
-inference::inference(const std::vector< std::pair<double, double> > &lims, const std::vector<double> &prior) : mcmc(lims), prior(prior), proposal_width(1.0) {}
-void inference::set_prior(const std::vector<double> &v) {
-	if (v.size() != dim) std::cerr << "prior has wrong dimension" << std::endl;
-	else prior = v;
-	return;
-}
+inference::inference(const unsigned int dim) : mcmc(dim), proposal_width(1.0), prior_dist_type(uniform) {}
+inference::inference(const std::vector< std::pair<double, double> > &lims) : mcmc(lims), proposal_width(1.0), prior_dist_type(uniform) {}
 
 double inference::get_std_normal_1d() {
 	return gauss(gen);
@@ -22,13 +12,19 @@ void inference::propose() {
 void inference::set_proposal_width(const double w) {
 	proposal_width = w;
 }
+void inference::set_observations(const std::vector<std::vector<double>> &obser) {
+	observations = obser;
+}
+void inference::add_observation(const std::vector<double> &observation) {
+	observations.push_back(observation);
+}
 
 double inference::neg_log_normal_distribution(const std::vector<double> &data, const std::vector<double> &X) {
 	double mu{ X.at(0) }, wert{ data.at(0) };
 	double sigma = X.at(1);
 	return std::pow((wert - mu) / sigma, 2) / 2 + std::log(2 * PI) / 2 + std::log(sigma);
 }
-double inference::neg_log_likelihood(const std::vector<std::vector<double>> &observations, const std::vector<double> &z) {
+double inference::neg_log_likelihood(const std::vector<double> &z) {
 	double likeli{ 0.0 };
 	for (auto obs : observations) {
 		likeli += neg_log_normal_distribution(obs, z);
@@ -36,15 +32,23 @@ double inference::neg_log_likelihood(const std::vector<std::vector<double>> &obs
 	return likeli;
 }
 double inference::neg_log_prior_distribution(const std::vector<double> &data) {
-	double mu{ prior.at(0) }, wert{ data.at(0) };
-	double sigma = prior.at(1);
-	return std::pow((wert - mu) / sigma, 2) / 2 + std::log(2 * PI) / 2 + std::log(sigma);
+	switch (prior_dist_type)
+	{
+	case uniform: 
+		return 0;
+		break;
+	case normal:	// brauche für jede Komponente des Datensatzes einen eigenen Satz Parameter der Verteilung: std::vector< std::pair<double mu, double sigma> > von dimension dim
+		double mu{ 0.0 }, wert{ data.at(0) };
+		double sigma{ 1.0 };
+		return std::pow((wert - mu) / sigma, 2) / 2 + std::log(2 * PI) / 2 + std::log(sigma);
+		break;
+	}
 }
 
-bool inference::success(const std::vector<std::vector<double>> &observations) {
-	double neg_log_likelihood_x{ neg_log_likelihood(observations,x) }, neg_log_likelihood_y{ neg_log_likelihood(observations,y) };
+bool inference::success() {
+	double neg_log_likelihood_x{ neg_log_likelihood(x) }, neg_log_likelihood_y{ neg_log_likelihood(y) };
 	double prior_x{ neg_log_prior_distribution(x) }, prior_y{ neg_log_prior_distribution(y) };
-	double p_success = std::exp(prior_x - prior_y) * std::exp(neg_log_likelihood_x - neg_log_likelihood_y);
+	double p_success = std::exp(prior_x - prior_y + neg_log_likelihood_x - neg_log_likelihood_y);
 	if (uniform_dist(gen) < p_success) return true;
 	else return false;
 	return true;
