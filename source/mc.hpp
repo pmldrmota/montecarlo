@@ -20,10 +20,13 @@
 #define _mc_hpp_
 
 #include <iostream>
+#include <iomanip>
 #include <vector>
+#include <map>
 #include <tuple>
 #include <cmath>
 #include <numeric>
+#include <algorithm> // std::max_element
 #include <random>
 #include <chrono>		// seed
 
@@ -57,11 +60,13 @@ public:
 	std::vector<std::vector<double>> get_trace();	// returns trace
 	std::vector<double> get_trace(const unsigned int i);	// returns i'th position of the trace
 // PRINT FUNCTIONS
-	void ret_x(std::ostream &out);	// writes vector to screen
+	void print_x(std::ostream &out);	// writes vector to screen
+	void print_histogram(std::ostream &out, const unsigned int n_bins, const unsigned int var);
 // VECTOR FUNCTIONS
 	double l2_norm_x();				// calculates l2-norm of x
-// DIAGNOSTIC FUNCTIONS
+// DIAGNOSTIC AO FUNCTIONS
 	double autocorrelation(const unsigned int k);		// evaluates the empirical autocorrelation of the trace with lag k
+	std::map<unsigned int, unsigned int> histogram(const unsigned int n_bins, const unsigned int var);	// returns a histogram with bins numerated from 0 == [a,a+span/n_bins] to n_bins == [b-span/n_bins,b]
 };
 
 // VECTOR OPERATORS AND FUNCTIONS
@@ -72,5 +77,6 @@ std::vector<double> operator+(const std::vector<double>& v1, const std::vector<d
 std::vector<double> operator-(const std::vector<double>& v1, const std::vector<double>& v2);
 double l2_norm(const std::vector<double> &vec);	// calculates l2-norm of vector
 double mean(const std::vector<double> &vec);	// calculates the algebraic mean of a vector
+bool compare_counts(const std::pair<unsigned int, unsigned int>&a, const std::pair<unsigned int, unsigned int>&b);	// return a.second < b.second;
 
 #endif // !_mc_hpp_

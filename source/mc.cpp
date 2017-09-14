@@ -40,7 +40,7 @@ std::vector<std::vector<double>> mc::get_trace() {
 std::vector<double> mc::get_trace(const unsigned int i) {
 	return trace.at(i);
 }
-void mc::ret_x(std::ostream &out) {
+void mc::print_x(std::ostream &out) {
 	if (x.empty()) return;
 	out << "(";
 	for (auto it : x) {
@@ -48,6 +48,18 @@ void mc::ret_x(std::ostream &out) {
 		if (it != x.back()) out << ", ";
 	}
 	out << ")" << std::endl;
+}
+void mc::print_histogram(std::ostream &out, const unsigned int n_bins, const unsigned int var) {
+	std::map<unsigned int, unsigned int> hist = histogram(n_bins, var);
+	int max_count = std::max_element(hist.begin(), hist.end(), compare_counts)->second;
+	double a{ limits[var].first };
+	double span{ spans.at(var) };
+	for (auto it : hist) {
+		std::cout << std::fixed << std::setprecision(2) << a + it.first*span / n_bins << " - " << a + (it.first+1)*span / n_bins << "\t" << it.second << "\t";
+		for (int i = 0; i < (1.0*it.second / max_count) * 25; i++) std::cout << "X";
+		std::cout << std::endl;
+	}
+
 }
 double mc::l2_norm_x() {
 	return l2_norm(x);
@@ -66,6 +78,26 @@ double mc::autocorrelation(const unsigned int k) {
 	for (int i = 0; i < step_nr - k; i++) sum += ((trace.at(i) - mean_trace)*(trace.at(i + k) - mean_trace))/step_nr;
 	return sum;
 }
+std::map<unsigned int, unsigned int> mc::histogram(const unsigned int n_bins, const unsigned int var) {
+	std::map<unsigned int, unsigned int> hist;
+	if (var > dim) std::cerr << "the variable passed to histogram is too large" << std::endl;
+	else {
+		std::vector<double> values;
+		for (int i = 0; i < step_nr; i++) {
+			values.push_back(trace[i].at(var));
+		}
+		double a{ limits[var].first };
+		double span{ spans.at(var) };
+
+		int m;
+		for (auto it : values) {
+			m = n_bins*((it - a) / span);
+			++hist[m];
+		}
+	}
+	return hist;
+}
+
 
 std::vector<double> operator*(const std::vector<double>& v, double alfa)
 {
@@ -114,4 +146,8 @@ double l2_norm(const std::vector<double> &vec) {
 }
 double mean(const std::vector<double> &vec) {
 	return std::accumulate(vec.begin(), vec.end(), 0.0)/vec.size();
+}
+bool compare_counts(const std::pair<unsigned int, unsigned int>&a, const std::pair<unsigned int, unsigned int>&b)
+{
+	return a.second<b.second;
 }
