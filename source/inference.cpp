@@ -48,8 +48,7 @@ double inference::neg_log_prior_distribution(const std::vector<double> &data) {
 bool inference::success() {
 	double neg_log_likelihood_x{ neg_log_likelihood(x) }, neg_log_likelihood_y{ neg_log_likelihood(y) };
 	double prior_x{ neg_log_prior_distribution(x) }, prior_y{ neg_log_prior_distribution(y) };
-	double p_success = std::exp(prior_x - prior_y + neg_log_likelihood_x - neg_log_likelihood_y);
-	if (uniform_dist(gen) < p_success) return true;
+	double log_p_success = prior_x - prior_y + neg_log_likelihood_x - neg_log_likelihood_y;
+	if (log_p_success >= 0 || (uniform_dist(gen) < std::exp(log_p_success))) return true;	// shortcut property: exp(log_p_succ) can never overflow, because it is only evaluated if log_p_success >= 0
 	else return false;
-	return true;
 }
