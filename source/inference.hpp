@@ -24,7 +24,7 @@ private:
 	double neg_log_normal_distribution(const std::vector<double> &data, const std::vector<double> &X);	// returns negative logarithmic normal probabilities of data respective to X
 	double neg_log_likelihood(const std::vector<double> &z);	// calculates the likelihood of all observations together respective state z (x or y)
 	
-	bool success();	// specified for inference purpose
+	void set_log_p_success();	// specified for inference purpose
 
 public:
 	inference(const unsigned int dim);
