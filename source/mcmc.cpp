@@ -23,12 +23,17 @@ void mcmc::update() {
 	do {
 		propose();
 	} while (!y_inside_space());
+	set_log_p_success();
 	if (success()) x = y;
 	step_nr++;
 	trace.push_back(x);
 }
+void mcmc::set_log_p_success() {
+	log_p_success = 0;
+}
 bool mcmc::success() {
-	return true;
+	if (log_p_success >= 0 || (uniform_dist(gen) < std::exp(log_p_success))) return true;	// shortcut property: exp(log_p_succ) can never overflow, because it is only evaluated if log_p_success >= 0
+	else return false;
 }
 bool mcmc::y_inside_space() {
 	bool inside{ true };

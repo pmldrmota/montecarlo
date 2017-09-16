@@ -5,6 +5,7 @@
 #include <random>
 #include <tuple>
 #include <vector>
+#include <cmath>
 
 class mcmc : public mc {
 protected:
@@ -15,7 +16,9 @@ protected:
 	std::vector<double> y;	// proposed next position
 	virtual void propose();	// proposes next position. has to be specified in inherited class!
 // accepting proposal
-	virtual bool success();	// returns 1 if update is accepted, 0 otherwise. has to be specified in inherited class!
+	double log_p_success;	// logarithmic acceptance probability
+	virtual void set_log_p_success();	// calculates log_p_success. has to be specified in inherited class!
+	bool success();	// returns 1 if update is accepted, 0 otherwise. 
 	bool y_inside_space();	// checks if proposed y is inside space
 
 public:
