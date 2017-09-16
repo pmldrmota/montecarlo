@@ -1,1 +1,1 @@
-g++ -std=c++11 -O source/test.cpp release/obj/mc.o release/obj/rd.o release/obj/mcmc.o release/obj/inference.o -o release/test
+g++ -std=c++11 -O source/test.cpp release/obj/mc.o release/obj/rd.o release/obj/mcmc.o release/obj/inference.o release/obj/bimodal.o -o release/test
