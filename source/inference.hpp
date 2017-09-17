@@ -2,6 +2,7 @@
 #define _inference_hpp_
 
 #include "mcmc.hpp"
+#include "triple.h"
 #include <cmath>
 #include <random>
 #include <vector>
@@ -12,7 +13,8 @@ enum dist_type { uniform, normal, logistic, exponential, chi_squared, lorentz, p
 
 class inference : public mcmc {
 private:
-	dist_type prior_dist_type;
+	std::vector<std::triple<dist_type, double, double>> prior_distributions;
+
 	std::vector<std::vector<double>> observations;
 	
 	std::normal_distribution<double> gauss;
@@ -20,7 +22,8 @@ private:
 	void propose();	// proposes next position (gaussian distributed with center x and proposal_width*span/100 stddeviation)
 
 	double get_std_normal_1d();
-	double neg_log_prior_distribution(const std::vector<double> &data);	// returns value of prior distribution - for the moment uniform distribution returning 0.
+	double neg_log_prior_distribution(const unsigned int d, const double wert);	// returns value of prior distribution - for the moment uniform distribution returning 0.
+	double neg_log_prior_p(const std::vector<double> &data);
 	double neg_log_normal_distribution(const std::vector<double> &data, const std::vector<double> &X);	// returns negative logarithmic normal probabilities of data respective to X
 	double neg_log_likelihood(const std::vector<double> &z);	// calculates the likelihood of all observations together respective state z (x or y)
 	
