@@ -26,6 +26,8 @@ public:
 	mcmc(const std::vector< std::pair<double, double> > &lims);
 
 	void update();				// proposes new position and accepts it if success evaluates to true
+
+	void burn_in(const unsigned int period);	// makes 'period' steps that are not counted
 };
 
 #endif // !_mcmc_hpp_

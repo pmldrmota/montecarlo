@@ -14,6 +14,7 @@ int main() {
 
 	bimodal inst(lims);
 	inst.set_proposal_width(5);
+	inst.burn_in(500);
 
 	for (int i = 0; i < max; i++) inst.update();
 

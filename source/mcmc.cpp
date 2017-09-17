@@ -16,24 +16,26 @@ void mcmc::starting_point() {
 	}
 	trace.push_back(x);
 }
-void mcmc::propose() {
-	y = x;
+void mcmc::burn_in(const unsigned int period) {
+	for (int i = 0; i < period; i++) {
+		do {
+			propose();	// happens somewhere else
+		} while (!y_inside_space());
+		set_log_p_success();	// happens somewhere else
+		if (success()) x = y;
+	}
 }
 void mcmc::update() {
 	do {
-		propose();
+		propose();	// happens somewhere else
 	} while (!y_inside_space());
-	set_log_p_success();
+	set_log_p_success();	// happens somewhere else
 	if (success()) x = y;
 	step_nr++;
 	trace.push_back(x);
 }
-void mcmc::set_log_p_success() {
-	log_p_success = 0;
-}
-bool mcmc::success() {
-	if (log_p_success >= 0 || (uniform_dist(gen) < std::exp(log_p_success))) return true;	// shortcut property: exp(log_p_succ) can never overflow, because it is only evaluated if log_p_success >= 0
-	else return false;
+void mcmc::propose() {
+	y = x;
 }
 bool mcmc::y_inside_space() {
 	bool inside{ true };
@@ -46,4 +48,11 @@ bool mcmc::y_inside_space() {
 		}
 	}
 	return inside;
+}
+void mcmc::set_log_p_success() {
+	log_p_success = 0;
+}
+bool mcmc::success() {
+	if (log_p_success >= 0 || (uniform_dist(gen) < std::exp(log_p_success))) return true;	// shortcut property: exp(log_p_succ) can never overflow, because it is only evaluated if log_p_success >= 0
+	else return false;
 }
