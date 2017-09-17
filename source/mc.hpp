@@ -5,7 +5,8 @@
 // sets up the space with dimension dim and limits and provides basic functionality as
 // - the current position in space
 // - the number of steps already taken
-// - a history of all previous positions (excl. x)
+// - a history of all previous positions
+// - a histogram of the positions visited in a given dimension
 // - a random number generator
 // - autocorrelation function that computes the value of autocorrelation of the trace with user-defined lag
 // - function that calculates the l2-norm of the current x
@@ -47,8 +48,8 @@ protected:
 
 public:
 // CONSTRUCTOR
-	mc(const unsigned int dim);
-	mc(const std::vector< std::pair<double, double> > &lims);
+	mc(const unsigned int dim);	// initialises limits [0,1] for all dimensions
+	mc(const std::vector< std::pair<double, double> > &lims); // sets dimension to lims.size()
 // RETURN VARIABLES
 	unsigned int dimension();		// returns dim
 	unsigned int get_step_nr();		// returns nr_steps

@@ -12,6 +12,13 @@ mc::mc(const std::vector< std::pair<double, double> > &lims) : step_nr(0), limit
 	x.resize(dim);
 	complement_space_vars();
 }
+void mc::complement_space_vars() {
+	// set spans
+	for (auto it : limits) spans.push_back(it.second - it.first);
+	// set volume
+	volume = 1.0;
+	for (auto it : spans) volume *= it;
+}
 
 unsigned int mc::dimension() { 
 	return dim; 
@@ -63,13 +70,6 @@ void mc::print_histogram(std::ostream &out, const unsigned int n_bins, const uns
 }
 double mc::l2_norm_x() {
 	return l2_norm(x);
-}
-void mc::complement_space_vars() {
-	// set spans
-	for (auto it : limits) spans.push_back(it.second - it.first);
-	// set volume
-	volume = 1.0;
-	for (auto it : spans) volume *= it;
 }
 double mc::autocorrelation(const unsigned int k) {
 	std::vector<double> mean_trace(dim);
