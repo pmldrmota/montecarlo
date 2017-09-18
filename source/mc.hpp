@@ -68,6 +68,9 @@ public:
 // DIAGNOSTIC AO FUNCTIONS
 	double autocorrelation(const unsigned int k);		// evaluates the empirical autocorrelation of the trace with lag k
 	std::map<unsigned int, unsigned int> histogram(const unsigned int n_bins, const unsigned int var);	// returns a histogram with bins numerated from 0 == [a,a+span/n_bins] to n_bins == [b-span/n_bins,b]
+	double expectation(const unsigned int var);	// calculates expectation value of the distribution of var'th variable
+	double variance(const unsigned int var);	// calculates variance of the distribution of var'th variable
+	void reset();	// resets trace and nr_steps, but keeps limits, current x and random seed
 };
 
 // VECTOR OPERATORS AND FUNCTIONS

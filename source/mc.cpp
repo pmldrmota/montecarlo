@@ -97,6 +97,20 @@ std::map<unsigned int, unsigned int> mc::histogram(const unsigned int n_bins, co
 	}
 	return hist;
 }
+double mc::expectation(const unsigned int var) {
+	double sum{ 0.0 };
+	for (auto it : trace) sum += it.at(var);
+	return sum / step_nr;
+}
+double mc::variance(const unsigned int var) {
+	double qsum{ 0.0 }, mu{ expectation(var) };
+	for (auto it : trace) qsum += std::pow(it.at(var) - mu, 2);
+	return qsum / step_nr;
+}
+void mc::reset() {
+	trace.clear();
+	step_nr = 0;
+}
 
 
 std::vector<double> operator*(const std::vector<double>& v, double alfa)
