@@ -73,10 +73,10 @@ double mc::l2_norm_x() {
 }
 double mc::autocorrelation(const unsigned int k) {
 	std::vector<double> mean_trace(dim);
-	for (int i = 0; i < dim; i++) mean_trace.at(i) = mean(trace.at(i));
-	double sum{ 0.0 };
-	for (int i = 0; i < step_nr - k; i++) sum += ((trace.at(i) - mean_trace)*(trace.at(i + k) - mean_trace))/step_nr;
-	return sum;
+	for (int d = 0; d < dim; d++) mean_trace.at(d) = expectation(d);
+	double acsum{ 0.0 };
+	for (int i = 0; i < step_nr - k; i++) acsum += ((trace.at(i) - mean_trace)*(trace.at(i + k) - mean_trace))/step_nr;
+	return acsum;
 }
 std::map<unsigned int, unsigned int> mc::histogram(const unsigned int n_bins, const unsigned int var) {
 	std::map<unsigned int, unsigned int> hist;
@@ -111,7 +111,22 @@ void mc::reset() {
 	trace.clear();
 	step_nr = 0;
 }
+void mc::write_trace_to_file(std::ofstream &outf) {
+	std::string line;
+	for (auto point : trace) {					// iterate over all points in the trace
+		for (auto coord : point) {
+			line.append(std::to_string(coord));	// append coordinate
+			line.append("\t");					// tabs between coordinates
+		}
+		line.pop_back();						// delete last tab
 
+		outf << line << std::endl;				// write line with coordinates of one point to the file
+		line.clear();
+	}
+}
+void mc::write_autocorrelation_to_file(std::ofstream &outf, const unsigned int max_lag) {
+	for (int k = 0; k < max_lag; k++) outf << k << "\t" << autocorrelation(k) << std::endl;
+}
 
 std::vector<double> operator*(const std::vector<double>& v, double alfa)
 {

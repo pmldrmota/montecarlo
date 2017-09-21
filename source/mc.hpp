@@ -19,16 +19,21 @@
 */
 #ifndef _mc_hpp_
 #define _mc_hpp_
+#ifndef __USE_MINGW_ANSI_STDIO
+#define __USE_MINGW_ANSI_STDIO 0	// needed because of std::to_string
+#endif // !__USE_MINGW_ANSI_STDIO
 
-#include <iostream>
-#include <iomanip>
-#include <vector>
-#include <map>
-#include <tuple>
-#include <cmath>
-#include <numeric>
-#include <algorithm> // std::max_element
-#include <random>
+#include <iostream>		// print function
+#include <fstream>		// write_trace_to_file
+#include <string>		// write_trace_to_file
+#include <iomanip>		// histogram
+#include <vector>		// x, trace, limits
+#include <map>			// histogram
+#include <tuple>		// limits
+#include <cmath>		// autocorrelation
+#include <numeric>		// std::accumulate
+#include <algorithm>	// std::max_element
+#include <random>		// gen
 #include <chrono>		// seed
 
 class mc {
@@ -71,6 +76,8 @@ public:
 	double expectation(const unsigned int var);	// calculates expectation value of the distribution of var'th variable
 	double variance(const unsigned int var);	// calculates variance of the distribution of var'th variable
 	void reset();	// resets trace and nr_steps, but keeps limits, current x and random seed
+	void write_trace_to_file(std::ofstream &outf);	// writes the trace to a file (given by argument std::ofstream outf)
+	void write_autocorrelation_to_file(std::ofstream &outf, const unsigned int max_lag);	// writes k over autocorrelation(k) to a file for subsequent plotting
 };
 
 // VECTOR OPERATORS AND FUNCTIONS
