@@ -35,17 +35,19 @@
 #include <algorithm>	// std::max_element
 #include <random>		// gen
 #include <chrono>		// seed
+#include <sstream>		// gen_status
 
 #include "cereal\archives\binary.hpp"
 #include "cereal\access.hpp"
 #include "cereal\types\utility.hpp"
 #include "cereal\types\vector.hpp"
+#include "cereal\types\string.hpp"
 
 struct mc_archive {
 	/*
 	// for re-construction of mc instance from cereal binary file: use constructor with this 'archive' structure as its argument
 	*/
-	unsigned seed;
+	std::string gen_status;
 	std::vector< std::pair<double, double> > limits;
 	std::vector<std::vector<double>> trace;
 // CEREAL	
@@ -68,7 +70,6 @@ protected:
 	std::vector<double> x;	// contains current position
 	std::vector<std::vector<double>> trace;	// contains all positions since construction
 // RANDOM GENERATOR VARIABLES
-	unsigned seed;
 	std::mt19937 gen;		// random number generator needed for all distributions
 
 public:

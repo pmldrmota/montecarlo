@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "mc.hpp"
+#include "rd.hpp"
 #include "cereal\archives\binary.hpp"
 #include <exception>
 
@@ -9,9 +9,21 @@ int main() {
 	{
 		std::ofstream os("archive.bin", std::ios::binary); // any stream can be used
 		cereal::BinaryOutputArchive oarchive(os); // Create an output archive
-
-		mc inst(3);
-		oarchive(inst.archivise()); // Write the data to the archive
+		mc_archive old_archive;
+		rd inst(2);
+		inst.update();
+		inst.update();
+		inst.update();
+		inst.update();
+		old_archive = inst.archivise();
+		oarchive(old_archive); // Write the data to the archive
+		inst.print_x(std::cout);
+		inst.update();
+		inst.print_x(std::cout);
+		inst.update();
+		inst.print_x(std::cout);
+		inst.update();
+		inst.print_x(std::cout);
 	}
 	{
 		std::ifstream is("archive.bin", std::ios::binary); // any stream can be used
@@ -24,9 +36,15 @@ int main() {
 			std::cerr << ausnahme.what() << std::endl;
 			return 0;
 		}
-
-		mc inst2(saved_archive);
-		std::cout << inst2.dimension() << std::endl;
+		rd inst2(saved_archive);
+		std::cout << "step_nr: " << inst2.get_step_nr() << std::endl;
+		inst2.print_x(std::cout);
+		inst2.update();
+		inst2.print_x(std::cout);
+		inst2.update();
+		inst2.print_x(std::cout);
+		inst2.update();
+		inst2.print_x(std::cout);
 	}
 	return 0;
 }
