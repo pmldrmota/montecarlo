@@ -41,53 +41,64 @@
 #include "cereal\types\utility.hpp"
 #include "cereal\types\vector.hpp"
 
+struct mc_archive {
+	/*
+	// for re-construction of mc instance from cereal binary file: use constructor with this 'archive' structure as its argument
+	*/
+	unsigned seed;
+	std::vector< std::pair<double, double> > limits;
+	std::vector<std::vector<double>> trace;
+// CEREAL	
+	template<class Archive>
+	void serialize(Archive & ar); // serialize things by passing them to the archive
+};
 
 class mc {
 protected:
 // SPACE VARIABLES
-	unsigned int dim;		// dimension of space
+	unsigned dim;		// dimension of space
 	std::vector< std::pair<double, double> > limits;	// limits of the space
 	std::vector<double> spans;	// span of the dimensions of the space
 	double volume;	// volume of the space
 	void complement_space_vars();	// fill spans and volume
 // ALGORITHM VARIABLES
-	unsigned int step_nr;	// number of steps already done
+	unsigned step_nr;	// number of steps already done
 	std::vector<double> x;	// contains current position
 	std::vector<std::vector<double>> trace;	// contains all positions since construction
 // RANDOM GENERATOR VARIABLES
+	unsigned seed;
 	std::mt19937 gen;		// random number generator needed for all distributions
-// CEREAL	
-	friend class cereal::access;		// gives access to the private serialize
-	template<class Archive>
-	void serialize(Archive & archive);	// This method lets cereal know which data members to serialize
 
 public:
 // CONSTRUCTOR
-	mc(const unsigned int dim);	// initialises limits [0,1] for all dimensions
+	mc(const unsigned dim);	// initialises limits [0,1] for all dimensions
 	mc(const std::vector< std::pair<double, double> > &lims); // sets dimension to lims.size()
+	mc(mc_archive &ar);	// re-constructs instance of mc from a cereal binary file
 // RETURN VARIABLES
-	unsigned int dimension();		// returns dim
-	unsigned int get_step_nr();		// returns nr_steps
-	std::pair<double, double> get_limits(const unsigned int d);	// return limits of dimension d
-	double get_span(const unsigned int d);	// return span of dimension d
+	unsigned dimension();		// returns dim
+	unsigned get_step_nr();		// returns nr_steps
+	std::pair<double, double> get_limits(const unsigned d);	// return limits of dimension d
+	double get_span(const unsigned d);	// return span of dimension d
 	double get_volume();	// returns volume
 	std::vector<double> get_x();	// returns x
-	double get_x(const unsigned int pos);	// returns pos'th element of x
+	double get_x(const unsigned pos);	// returns pos'th element of x
 	std::vector<std::vector<double>> get_trace();	// returns trace
-	std::vector<double> get_trace(const unsigned int i);	// returns i'th position of the trace
+	std::vector<double> get_trace(const unsigned i);	// returns i'th position of the trace
 // PRINT FUNCTIONS
 	void print_x(std::ostream &out);	// writes vector to screen
-	void print_histogram(std::ostream &out, const unsigned int n_bins, const unsigned int var);
+	void print_histogram(std::ostream &out, const unsigned n_bins, const unsigned var);
 // VECTOR FUNCTIONS
 	double l2_norm_x();				// calculates l2-norm of x
+// ARCHIVE
+	mc_archive archivise();
 // DIAGNOSTIC AO FUNCTIONS
-	double autocorrelation(const unsigned int k);		// evaluates the empirical autocorrelation of the trace with lag k
-	std::map<unsigned int, unsigned int> histogram(const unsigned int n_bins, const unsigned int var);	// returns a histogram with bins numerated from 0 == [a,a+span/n_bins] to n_bins == [b-span/n_bins,b]
-	double expectation(const unsigned int var);	// calculates expectation value of the distribution of var'th variable
-	double variance(const unsigned int var);	// calculates variance of the distribution of var'th variable
+	double autocorrelation(const unsigned k);		// evaluates the empirical autocorrelation of the trace with lag k
+	std::map<unsigned, unsigned> histogram(const unsigned n_bins, const unsigned var);	// returns a histogram with bins numerated from 0 == [a,a+span/n_bins] to n_bins == [b-span/n_bins,b]
+	double expectation(const unsigned var);	// calculates expectation value of the distribution of var'th variable
+	double variance(const unsigned var);	// calculates variance of the distribution of var'th variable
 	void reset();	// resets trace and nr_steps, but keeps limits, current x and random seed
 	void write_trace_to_file(std::ofstream &outf);	// writes the trace to a file (given by argument std::ofstream outf)
-	void write_autocorrelation_to_file(std::ofstream &outf, const unsigned int max_lag);	// writes k over autocorrelation(k) to a file for subsequent plotting
+	void write_autocorrelation_to_file(std::ofstream &outf, const unsigned max_lag);	// writes k over autocorrelation(k) to a file for subsequent plotting
 };
 
 // VECTOR OPERATORS AND FUNCTIONS
@@ -98,6 +109,6 @@ std::vector<double> operator+(const std::vector<double>& v1, const std::vector<d
 std::vector<double> operator-(const std::vector<double>& v1, const std::vector<double>& v2);
 double l2_norm(const std::vector<double> &vec);	// calculates l2-norm of vector
 double mean(const std::vector<double> &vec);	// calculates the algebraic mean of a vector
-bool compare_counts(const std::pair<unsigned int, unsigned int>&a, const std::pair<unsigned int, unsigned int>&b);	// return a.second < b.second;
+bool compare_counts(const std::pair<unsigned, unsigned>&a, const std::pair<unsigned, unsigned>&b);	// return a.second < b.second;
 
 #endif // !_mc_hpp_

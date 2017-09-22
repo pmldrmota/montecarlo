@@ -8,6 +8,9 @@ mcmc::mcmc(const std::vector< std::pair<double, double> > &lims) : mc(lims) {
 	starting_point();
 	y.resize(dim);
 }
+/*mcmc::mcmc(archive &ar) : mc(ar) {
+	y.resize(dim);
+}*/
 void mcmc::starting_point() {
 	std::pair<double, double> limit;
 	for (int i = 0; i < x.size(); i++) {

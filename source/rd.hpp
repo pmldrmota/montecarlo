@@ -14,6 +14,7 @@ private:
 public:
 	rd(const unsigned int dim);
 	rd(const std::vector< std::pair<double, double> > &lims);
+	//rd(mc_archive &ar);
 	void update();				// generates a new random vector
 };
 

@@ -24,6 +24,7 @@ protected:
 public:
 	mcmc(const unsigned int dim);
 	mcmc(const std::vector< std::pair<double, double> > &lims);
+	//mcmc(archive &ar);
 
 	void update();				// proposes new position and accepts it if success evaluates to true
 

@@ -1,41 +1,59 @@
 #include "mc.hpp"
 
-mc::mc(const unsigned int dim) : dim(dim), step_nr(0) {
-	gen.seed(std::chrono::system_clock::now().time_since_epoch().count());
-	x.resize(dim);
-	for(int i = 0; i < dim; i++) limits.push_back(std::pair<double, double>(0.0, 1.0));
+mc::mc(const unsigned dim) : step_nr(0) {
+	for (int i = 0; i < dim; i++) limits.push_back(std::pair<double, double>(0.0, 1.0));
 	complement_space_vars();
+	seed = std::chrono::system_clock::now().time_since_epoch().count();
+	gen.seed(seed);
+	x.resize(dim);
 }
 mc::mc(const std::vector< std::pair<double, double> > &lims) : step_nr(0), limits(lims) {
-	dim = limits.size();
-	gen.seed(std::chrono::system_clock::now().time_since_epoch().count());
-	x.resize(dim);
 	complement_space_vars();
+	seed = std::chrono::system_clock::now().time_since_epoch().count();
+	gen.seed(seed);
+	x.resize(dim);
+}
+mc::mc(mc_archive &ar) : seed(ar.seed), limits(ar.limits), trace(ar.trace) {
+	complement_space_vars();
+	step_nr = trace.size();
+	if (step_nr > 0) {
+		x = trace.back();
+		gen.discard(step_nr);
+	}
 }
 void mc::complement_space_vars() {
+	dim = limits.size();
 	// set spans
 	for (auto it : limits) spans.push_back(it.second - it.first);
 	// set volume
 	volume = 1.0;
 	for (auto it : spans) volume *= it;
 }
-template<class Archive>
-void mc::serialize(Archive & archive) {
-	archive(limits, trace); // serialize things by passing them to the archive
-}
-template void mc::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
-template void mc::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);
 
-unsigned int mc::dimension() { 
+mc_archive mc::archivise() {
+	mc_archive temp;
+	temp.limits = limits;
+	temp.seed = seed;
+	temp.trace = trace;
+	return temp;
+}
+template<class Archive>
+void mc_archive::serialize(Archive & ar) {
+	ar(seed, limits, trace); // serialize things by passing them to the archive
+}
+template void mc_archive::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
+template void mc_archive::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);
+
+unsigned mc::dimension() { 
 	return dim; 
 }
-unsigned int mc::get_step_nr() {
+unsigned mc::get_step_nr() {
 	return step_nr;
 }
-std::pair<double, double> mc::get_limits(const unsigned int d) {
+std::pair<double, double> mc::get_limits(const unsigned d) {
 	return limits.at(d);
 }
-double mc::get_span(const unsigned int d) {
+double mc::get_span(const unsigned d) {
 	return spans.at(d);
 }
 double mc::get_volume() {
@@ -44,13 +62,13 @@ double mc::get_volume() {
 std::vector<double> mc::get_x() { 
 	return x; 
 }
-double mc::get_x(const unsigned int pos) {
+double mc::get_x(const unsigned pos) {
 	return x.at(pos);
 }
 std::vector<std::vector<double>> mc::get_trace() {
 	return trace;
 }
-std::vector<double> mc::get_trace(const unsigned int i) {
+std::vector<double> mc::get_trace(const unsigned i) {
 	return trace.at(i);
 }
 void mc::print_x(std::ostream &out) {
@@ -62,8 +80,8 @@ void mc::print_x(std::ostream &out) {
 	}
 	out << ")" << std::endl;
 }
-void mc::print_histogram(std::ostream &out, const unsigned int n_bins, const unsigned int var) {
-	std::map<unsigned int, unsigned int> hist = histogram(n_bins, var);
+void mc::print_histogram(std::ostream &out, const unsigned n_bins, const unsigned var) {
+	std::map<unsigned, unsigned> hist = histogram(n_bins, var);
 	int max_count = std::max_element(hist.begin(), hist.end(), compare_counts)->second;
 	double a{ limits[var].first };
 	double span{ spans.at(var) };
@@ -77,15 +95,15 @@ void mc::print_histogram(std::ostream &out, const unsigned int n_bins, const uns
 double mc::l2_norm_x() {
 	return l2_norm(x);
 }
-double mc::autocorrelation(const unsigned int k) {
+double mc::autocorrelation(const unsigned k) {
 	std::vector<double> mean_trace(dim);
 	for (int d = 0; d < dim; d++) mean_trace.at(d) = expectation(d);
 	double acsum{ 0.0 };
 	for (int i = 0; i < step_nr - k; i++) acsum += ((trace.at(i) - mean_trace)*(trace.at(i + k) - mean_trace))/step_nr;
 	return acsum;
 }
-std::map<unsigned int, unsigned int> mc::histogram(const unsigned int n_bins, const unsigned int var) {
-	std::map<unsigned int, unsigned int> hist;
+std::map<unsigned, unsigned> mc::histogram(const unsigned n_bins, const unsigned var) {
+	std::map<unsigned, unsigned> hist;
 	if (var > dim) std::cerr << "the variable passed to histogram is too large" << std::endl;
 	else {
 		std::vector<double> values;
@@ -103,12 +121,12 @@ std::map<unsigned int, unsigned int> mc::histogram(const unsigned int n_bins, co
 	}
 	return hist;
 }
-double mc::expectation(const unsigned int var) {
+double mc::expectation(const unsigned var) {
 	double sum{ 0.0 };
 	for (auto it : trace) sum += it.at(var);
 	return sum / step_nr;
 }
-double mc::variance(const unsigned int var) {
+double mc::variance(const unsigned var) {
 	double qsum{ 0.0 }, mu{ expectation(var) };
 	for (auto it : trace) qsum += std::pow(it.at(var) - mu, 2);
 	return qsum / step_nr;
@@ -130,7 +148,7 @@ void mc::write_trace_to_file(std::ofstream &outf) {
 		line.clear();
 	}
 }
-void mc::write_autocorrelation_to_file(std::ofstream &outf, const unsigned int max_lag) {
+void mc::write_autocorrelation_to_file(std::ofstream &outf, const unsigned max_lag) {
 	for (int k = 0; k < max_lag; k++) outf << k << "\t" << autocorrelation(k) << std::endl;
 }
 
@@ -182,7 +200,7 @@ double l2_norm(const std::vector<double> &vec) {
 double mean(const std::vector<double> &vec) {
 	return std::accumulate(vec.begin(), vec.end(), 0.0)/vec.size();
 }
-bool compare_counts(const std::pair<unsigned int, unsigned int>&a, const std::pair<unsigned int, unsigned int>&b)
+bool compare_counts(const std::pair<unsigned, unsigned>&a, const std::pair<unsigned, unsigned>&b)
 {
 	return a.second<b.second;
 }
