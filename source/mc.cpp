@@ -19,6 +19,12 @@ void mc::complement_space_vars() {
 	volume = 1.0;
 	for (auto it : spans) volume *= it;
 }
+template<class Archive>
+void mc::serialize(Archive & archive) {
+	archive(limits, trace); // serialize things by passing them to the archive
+}
+template void mc::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
+template void mc::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);
 
 unsigned int mc::dimension() { 
 	return dim; 

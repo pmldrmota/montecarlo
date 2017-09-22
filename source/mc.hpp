@@ -36,6 +36,12 @@
 #include <random>		// gen
 #include <chrono>		// seed
 
+#include "cereal\archives\binary.hpp"
+#include "cereal\access.hpp"
+#include "cereal\types\utility.hpp"
+#include "cereal\types\vector.hpp"
+
+
 class mc {
 protected:
 // SPACE VARIABLES
@@ -50,6 +56,10 @@ protected:
 	std::vector<std::vector<double>> trace;	// contains all positions since construction
 // RANDOM GENERATOR VARIABLES
 	std::mt19937 gen;		// random number generator needed for all distributions
+// CEREAL	
+	friend class cereal::access;		// gives access to the private serialize
+	template<class Archive>
+	void serialize(Archive & archive);	// This method lets cereal know which data members to serialize
 
 public:
 // CONSTRUCTOR

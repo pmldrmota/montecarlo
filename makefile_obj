@@ -1,5 +1,5 @@
-g++ -c -std=c++11 -O source/mc.cpp -o release/obj/mc.o
-g++ -c -std=c++11 -O source/rd.cpp -o release/obj/rd.o
-g++ -c -std=c++11 -O source/mcmc.cpp -o release/obj/mcmc.o
-g++ -c -std=c++11 -O source/inference.cpp -o release/obj/inference.o
-g++ -c -std=c++11 -O source/bimodal.cpp -o release/obj/bimodal.o
+g++ -c -std=c++11 -iquote source/ -O source/mc.cpp -o release/obj/mc.o
+g++ -c -std=c++11 -iquote source/ -O source/rd.cpp -o release/obj/rd.o
+g++ -c -std=c++11 -iquote source/ -O source/mcmc.cpp -o release/obj/mcmc.o
+g++ -c -std=c++11 -iquote source/ -O source/inference.cpp -o release/obj/inference.o
+g++ -c -std=c++11 -iquote source/ -O source/bimodal.cpp -o release/obj/bimodal.o
