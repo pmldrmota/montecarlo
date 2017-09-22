@@ -61,6 +61,8 @@ protected:
 	std::vector<double> spans;	// span of the dimensions of the space
 	double volume;	// volume of the space
 	void complement_space_vars();	// fill spans and volume
+// UPDATE
+	virtual void make_step();		// defined in inherited class: update x
 // ALGORITHM VARIABLES
 	unsigned step_nr;	// number of steps already done
 	std::vector<double> x;	// contains current position
@@ -74,6 +76,8 @@ public:
 	mc(const unsigned dim);	// initialises limits [0,1] for all dimensions
 	mc(const std::vector< std::pair<double, double> > &lims); // sets dimension to lims.size()
 	mc(mc_archive &ar);	// re-constructs instance of mc from a cereal binary file
+// UPDATE
+	void update();	// makes step (defined in inherited class) and increases step_nr and pushes x back to trace
 // RETURN VARIABLES
 	unsigned dimension();		// returns dim
 	unsigned get_step_nr();		// returns nr_steps

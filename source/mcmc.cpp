@@ -28,14 +28,12 @@ void mcmc::burn_in(const unsigned int period) {
 		if (success()) x = y;
 	}
 }
-void mcmc::update() {
+void mcmc::make_step() {
 	do {
 		propose();	// happens somewhere else
 	} while (!y_inside_space());
 	set_log_p_success();	// happens somewhere else
 	if (success()) x = y;
-	step_nr++;
-	trace.push_back(x);
 }
 void mcmc::propose() {
 	y = x;

@@ -20,14 +20,14 @@ protected:
 	virtual void set_log_p_success();	// calculates log_p_success. has to be specified in inherited class!
 	bool success();	// returns 1 if update is accepted, 0 otherwise. 
 	bool y_inside_space();	// checks if proposed y is inside space
+// update
+	void make_step();				// proposes new position and accepts it if success evaluates to true
 
 public:
 	mcmc(const unsigned int dim);
 	mcmc(const std::vector< std::pair<double, double> > &lims);
 	//mcmc(archive &ar);
-
-	void update();				// proposes new position and accepts it if success evaluates to true
-
+	
 	void burn_in(const unsigned int period);	// makes 'period' steps that are not counted
 };
 
