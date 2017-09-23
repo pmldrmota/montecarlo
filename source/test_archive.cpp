@@ -6,17 +6,15 @@
 
 
 int main() {
-	{
-		std::ofstream os("archive.bin", std::ios::binary); // any stream can be used
-		cereal::BinaryOutputArchive oarchive(os); // Create an output archive
-		mc_archive old_archive;
+
 		rd inst(2);
 		inst.update();
 		inst.update();
 		inst.update();
 		inst.update();
-		old_archive = inst.archivise();
-		oarchive(old_archive); // Write the data to the archive
+		
+		inst.archivise();
+
 		inst.print_x(std::cout);
 		inst.update();
 		inst.print_x(std::cout);
@@ -24,9 +22,9 @@ int main() {
 		inst.print_x(std::cout);
 		inst.update();
 		inst.print_x(std::cout);
-	}
+
 	{
-		std::ifstream is("archive.bin", std::ios::binary); // any stream can be used
+		std::ifstream is("backup.bin", std::ios::binary);
 		cereal::BinaryInputArchive iarchive(is); // Create an input archive
 		mc_archive saved_archive;
 		try {

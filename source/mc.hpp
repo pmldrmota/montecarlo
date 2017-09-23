@@ -95,7 +95,7 @@ public:
 // VECTOR FUNCTIONS
 	double l2_norm_x();				// calculates l2-norm of x
 // ARCHIVE
-	mc_archive archivise();
+	void archivise();
 // DIAGNOSTIC AO FUNCTIONS
 	double autocorrelation(const unsigned k);		// evaluates the empirical autocorrelation of the trace with lag k
 	std::map<unsigned, unsigned> histogram(const unsigned n_bins, const unsigned var);	// returns a histogram with bins numerated from 0 == [a,a+span/n_bins] to n_bins == [b-span/n_bins,b]
