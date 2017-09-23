@@ -2,6 +2,22 @@
 
 bimodal::bimodal(const unsigned int dim) : mcmc(dim), proposal_width(1.0) {}
 bimodal::bimodal(const std::vector< std::pair<double, double> > &lims) : mcmc(lims), proposal_width(1.0) {}
+bimodal::bimodal(bimodal_archive &ar) : mcmc(ar.mcdata), proposal_width(ar.proposal_width) {}
+
+void bimodal::archivise() {
+	std::ofstream os("backup.bin", std::ios::binary);
+	cereal::BinaryOutputArchive oarchive(os); // Create an output archive
+	oarchive(get_bimodal_archive());	// Archivate the mc_archive
+}
+bimodal_archive bimodal::get_bimodal_archive() {
+	return bimodal_archive{ get_mc_archive(), proposal_width };
+}
+template<class Archive>
+void bimodal_archive::serialize(Archive & ar) {
+	ar(mcdata, proposal_width); // serialize things by passing them to the archive
+}
+template void bimodal_archive::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
+template void bimodal_archive::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);
 
 double bimodal::get_std_normal_1d() {
 	return gauss(gen);

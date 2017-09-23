@@ -14,14 +14,14 @@ mc::mc(const std::vector< std::pair<double, double> > &lims) : step_nr(0), limit
 	x.resize(dim);
 }
 mc::mc(mc_archive &ar) : limits(ar.limits), trace(ar.trace) {
+	x = ar.x;
 	step_nr = trace.size();
 	complement_space_vars();
 
 	std::stringstream ss;
+	ss.setf(std::ios_base::dec, std::ios_base::basefield);
 	ss << ar.gen_status;
 	ss >> gen;
-
-	if (step_nr > 0) x = trace.back();
 }
 void mc::complement_space_vars() {
 	dim = limits.size();
@@ -33,21 +33,20 @@ void mc::complement_space_vars() {
 }
 
 void mc::archivise() {
-	mc_archive temp;
-	std::stringstream ss;
-	ss << gen;
-
-	temp.limits = limits;
-	temp.gen_status = ss.str();
-	temp.trace = trace;
-
 	std::ofstream os("backup.bin", std::ios::binary);
 	cereal::BinaryOutputArchive oarchive(os); // Create an output archive
-	oarchive(temp);	// Archivate the mc_archive
+	oarchive(get_mc_archive());	// Archivate the mc_archive
 }
+mc_archive mc::get_mc_archive() {
+	std::stringstream ss;
+	ss.setf(std::ios_base::dec, std::ios_base::basefield);
+	ss << gen;
+	return mc_archive{ ss.str(), x, limits, trace };
+}
+
 template<class Archive>
 void mc_archive::serialize(Archive & ar) {
-	ar(gen_status, limits, trace); // serialize things by passing them to the archive
+	ar(gen_status, x, limits, trace); // serialize things by passing them to the archive
 }
 template void mc_archive::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
 template void mc_archive::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);

@@ -8,25 +8,18 @@ mcmc::mcmc(const std::vector< std::pair<double, double> > &lims) : mc(lims) {
 	starting_point();
 	y.resize(dim);
 }
-/*mcmc::mcmc(archive &ar) : mc(ar) {
+mcmc::mcmc(mc_archive &ar) : mc(ar) {
 	y.resize(dim);
-}*/
+}
 void mcmc::starting_point() {
 	std::pair<double, double> limit;
 	for (int i = 0; i < x.size(); i++) {
 		limit = limits.at(i);
 		x.at(i) = limit.first + spans.at(i)*uniform_dist(gen);
 	}
-	trace.push_back(x);
 }
 void mcmc::burn_in(const unsigned int period) {
-	for (int i = 0; i < period; i++) {
-		do {
-			propose();	// happens somewhere else
-		} while (!y_inside_space());
-		set_log_p_success();	// happens somewhere else
-		if (success()) x = y;
-	}
+	for (int i = 0; i < period; i++) make_step();
 }
 void mcmc::make_step() {
 	do {

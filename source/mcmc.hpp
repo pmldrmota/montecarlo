@@ -26,7 +26,7 @@ protected:
 public:
 	mcmc(const unsigned int dim);
 	mcmc(const std::vector< std::pair<double, double> > &lims);
-	//mcmc(archive &ar);
+	mcmc(mc_archive &ar);
 	
 	void burn_in(const unsigned int period);	// makes 'period' steps that are not counted
 };
