@@ -3,23 +3,25 @@
 mc::mc(const unsigned dim) : step_nr(0) {
 	for (int i = 0; i < dim; i++) limits.push_back(std::pair<double, double>(0.0, 1.0));
 	complement_space_vars();
-	seed = std::chrono::system_clock::now().time_since_epoch().count();
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 	gen.seed(seed);
 	x.resize(dim);
 }
 mc::mc(const std::vector< std::pair<double, double> > &lims) : step_nr(0), limits(lims) {
 	complement_space_vars();
-	seed = std::chrono::system_clock::now().time_since_epoch().count();
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 	gen.seed(seed);
 	x.resize(dim);
 }
-mc::mc(mc_archive &ar) : seed(ar.seed), limits(ar.limits), trace(ar.trace) {
-	complement_space_vars();
+mc::mc(mc_archive &ar) : limits(ar.limits), trace(ar.trace) {
 	step_nr = trace.size();
-	if (step_nr > 0) {
-		x = trace.back();
-		gen.discard(step_nr);
-	}
+	complement_space_vars();
+
+	std::stringstream ss;
+	ss << ar.gen_status;
+	ss >> gen;
+
+	if (step_nr > 0) x = trace.back();
 }
 void mc::complement_space_vars() {
 	dim = limits.size();
@@ -30,20 +32,34 @@ void mc::complement_space_vars() {
 	for (auto it : spans) volume *= it;
 }
 
-mc_archive mc::archivise() {
+void mc::archivise() {
 	mc_archive temp;
+	std::stringstream ss;
+	ss << gen;
+
 	temp.limits = limits;
-	temp.seed = seed;
+	temp.gen_status = ss.str();
 	temp.trace = trace;
-	return temp;
+
+	std::ofstream os("backup.bin", std::ios::binary);
+	cereal::BinaryOutputArchive oarchive(os); // Create an output archive
+	oarchive(temp);	// Archivate the mc_archive
 }
 template<class Archive>
 void mc_archive::serialize(Archive & ar) {
-	ar(seed, limits, trace); // serialize things by passing them to the archive
+	ar(gen_status, limits, trace); // serialize things by passing them to the archive
 }
 template void mc_archive::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
 template void mc_archive::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);
 
+void mc::update() {
+	make_step();	// happens somewhere else
+	step_nr++;
+	trace.push_back(x);
+}
+void mc::make_step() {
+	return;
+}
 unsigned mc::dimension() { 
 	return dim; 
 }
