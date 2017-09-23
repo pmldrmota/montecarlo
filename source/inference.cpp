@@ -8,6 +8,23 @@ inference::inference(const std::vector< std::pair<double, double> > &lims) : mcm
 		prior_distributions.push_back(std::triple<dist_type, double, double>{uniform, it.first, it.second});
 	}
 }
+inference::inference(inference_archive &ar) : mcmc(ar.mcdata), observations(ar.observations), prior_distributions(ar.prior_distributions), proposal_width(ar.proposal_width) {}
+
+void inference::archivise() {
+	std::ofstream os("backup.bin", std::ios::binary);
+	cereal::BinaryOutputArchive oarchive(os); // Create an output archive
+	oarchive(get_inference_archive());	// Archivate the mc_archive
+}
+inference_archive inference::get_inference_archive() {
+	return inference_archive{ get_mc_archive(), prior_distributions, observations, proposal_width };
+}
+template<class Archive>
+void inference_archive::serialize(Archive & ar) {
+	ar(mcdata, prior_distributions, observations, proposal_width); // serialize things by passing them to the archive
+}
+template void inference_archive::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
+template void inference_archive::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);
+
 void inference::set_prior_distributions(const std::vector<std::triple<dist_type, double, double>> &pridist) {
 	if (pridist.size() != dim) std::cerr << "prior distribution settings have wrong dimension" << std::endl;
 	else prior_distributions = pridist;

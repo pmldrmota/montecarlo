@@ -32,6 +32,7 @@
 
 #include "cereal/cereal.hpp"
 #include <utility>
+#include "triple.h"
 
 namespace cereal
 {
@@ -41,6 +42,14 @@ namespace cereal
   {
     ar( CEREAL_NVP_("first",  pair.first),
         CEREAL_NVP_("second", pair.second) );
+  }
+  //! Serializing for std::triple
+  template <class Archive, class T1, class T2, class T3> inline
+	  void CEREAL_SERIALIZE_FUNCTION_NAME(Archive & ar, std::triple<T1, T2, T3> & triple)
+  {
+	  ar(CEREAL_NVP_("first", triple.first),
+		  CEREAL_NVP_("second", triple.second),
+		    CEREAL_NVP_("third", triple.third));
   }
 } // namespace cereal
 
