@@ -12,6 +12,6 @@ int main() {
 		inst.update();
 		if (inst.l2_norm_x() < 1.0) drinnen++;
 	}
-	std::cout << "Pi ~ " << 4.0*drinnen / max << std::endl;
+	std::cout << "Pi ~ " << 4.0*drinnen / inst.get_step_nr() << std::endl;
 	return 0;
 }
