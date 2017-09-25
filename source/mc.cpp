@@ -44,13 +44,6 @@ mc_archive mc::get_mc_archive() {
 	return mc_archive{ ss.str(), x, limits, trace };
 }
 
-template<class Archive>
-void mc_archive::serialize(Archive & ar) {
-	ar(gen_status, x, limits, trace); // serialize things by passing them to the archive
-}
-template void mc_archive::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
-template void mc_archive::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);
-
 void mc::update() {
 	make_step();	// happens somewhere else
 	step_nr++;

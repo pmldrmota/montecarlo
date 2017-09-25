@@ -7,19 +7,7 @@
 #include <cmath>
 #include <tuple>
 # define PI           3.14159265358979323846  /* pi */
-
-struct bimodal_archive {
-	/*
-	// for re-construction of mc instance from cereal binary file: use constructor with this 'archive' structure as its argument
-	*/
-	mc_archive mcdata;
-
-	double proposal_width;
-
-	// CEREAL	
-	template<class Archive>
-	void serialize(Archive & ar); // serialize things by passing them to the archive
-};
+#include "archives.hpp"
 
 class bimodal : public mcmc {
 private:
@@ -32,6 +20,7 @@ private:
 	double log_target_distribution(const double x);	// target distribution
 
 	void set_log_p_success();
+	bimodal_archive get_bimodal_archive();
 
 public:
 	bimodal(const unsigned int dim);
@@ -41,7 +30,6 @@ public:
 	void set_proposal_width(const double w);	// sets probability width of random walk
 
 	void archivise();
-	bimodal_archive get_bimodal_archive();
 };
 
 #endif // !_bimodal_hpp_

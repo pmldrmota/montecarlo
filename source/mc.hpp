@@ -37,23 +37,7 @@
 #include <chrono>		// seed
 #include <sstream>		// gen_status
 
-#include "cereal\archives\binary.hpp"
-#include "cereal\types\utility.hpp"
-#include "cereal\types\vector.hpp"
-#include "cereal\types\string.hpp"
-
-struct mc_archive {
-	/*
-	// for re-construction of mc instance from cereal binary file: use constructor with this 'archive' structure as its argument
-	*/
-	std::string gen_status;
-	std::vector<double> x;
-	std::vector< std::pair<double, double> > limits;
-	std::vector<std::vector<double>> trace;
-// CEREAL	
-	template<class Archive>
-	void serialize(Archive & ar); // serialize things by passing them to the archive
-};
+#include "archives.hpp"
 
 class mc {
 protected:
@@ -71,6 +55,8 @@ protected:
 	std::vector<std::vector<double>> trace;	// contains all positions since construction
 // RANDOM GENERATOR VARIABLES
 	std::mt19937 gen;		// random number generator needed for all distributions
+// ARCHIVE
+	mc_archive get_mc_archive();
 
 public:
 // CONSTRUCTOR
@@ -96,7 +82,6 @@ public:
 	double l2_norm_x();				// calculates l2-norm of x
 // ARCHIVE
 	virtual void archivise();
-	mc_archive get_mc_archive();
 // DIAGNOSTIC AO FUNCTIONS
 	double autocorrelation(const unsigned k);		// evaluates the empirical autocorrelation of the trace with lag k
 	std::map<unsigned, unsigned> histogram(const unsigned n_bins, const unsigned var);	// returns a histogram with bins numerated from 0 == [a,a+span/n_bins] to n_bins == [b-span/n_bins,b]

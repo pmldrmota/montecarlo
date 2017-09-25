@@ -18,12 +18,6 @@ void inference::archivise() {
 inference_archive inference::get_inference_archive() {
 	return inference_archive{ get_mc_archive(), prior_distributions, observations, proposal_width };
 }
-template<class Archive>
-void inference_archive::serialize(Archive & ar) {
-	ar(mcdata, prior_distributions, observations, proposal_width); // serialize things by passing them to the archive
-}
-template void inference_archive::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
-template void inference_archive::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);
 
 void inference::set_prior_distributions(const std::vector<std::triple<dist_type, double, double>> &pridist) {
 	if (pridist.size() != dim) std::cerr << "prior distribution settings have wrong dimension" << std::endl;

@@ -8,27 +8,8 @@
 #include <vector>
 #include <tuple>
 # define PI           3.14159265358979323846  /* pi */
-#include "cereal\archives\binary.hpp"
-#include "cereal\types\utility.hpp"
-#include "cereal\types\vector.hpp"
-#include <sstream>
-
-enum dist_type { uniform, normal, logistic, exponential, chi_squared, lorentz, poisson };
-
-struct inference_archive {
-	/*
-	// for re-construction of mc instance from cereal binary file: use constructor with this 'archive' structure as its argument
-	*/
-	mc_archive mcdata;
-
-	std::vector<std::triple<dist_type, double, double>> prior_distributions;
-	std::vector<std::vector<double>> observations;
-	double proposal_width;
-
-	// CEREAL	
-	template<class Archive>
-	void serialize(Archive & ar); // serialize things by passing them to the archive
-};
+#include "archives.hpp"
+#include "dist_type.h"
 
 class inference : public mcmc {
 private:
@@ -47,6 +28,7 @@ private:
 	double log_likelihood(const std::vector<double> &z);	// calculates the likelihood of all observations together given the parameter vector z (x or y). Calls neg_log_normal_distribution for each observation (problem specific!)
 	
 	void set_log_p_success();	// specified for inference purpose
+	inference_archive get_inference_archive();
 
 public:
 	inference(const unsigned dim);
@@ -59,7 +41,6 @@ public:
 	void add_observation(const std::vector<double> &observation);
 
 	void archivise();
-	inference_archive get_inference_archive();
 };
 
 #endif // !_inference_hpp_

@@ -12,12 +12,6 @@ void bimodal::archivise() {
 bimodal_archive bimodal::get_bimodal_archive() {
 	return bimodal_archive{ get_mc_archive(), proposal_width };
 }
-template<class Archive>
-void bimodal_archive::serialize(Archive & ar) {
-	ar(mcdata, proposal_width); // serialize things by passing them to the archive
-}
-template void bimodal_archive::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
-template void bimodal_archive::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);
 
 double bimodal::get_std_normal_1d() {
 	return gauss(gen);
