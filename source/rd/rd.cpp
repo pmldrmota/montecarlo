@@ -1,4 +1,4 @@
-#include "rd.hpp"
+#include "rd\rd.hpp"
 
 rd::rd(const unsigned int dim) : mc(dim) {
 	std::fill(x.begin(), x.end(), 0.0);	// set start point to origin

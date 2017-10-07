@@ -1,13 +1,13 @@
 #ifndef _bimodal_hpp_
 #define _bimodal_hpp_
 
-#include "mcmc.hpp"
+#include "common\mcmc.hpp"
 #include <vector>
 #include <random>
 #include <cmath>
 #include <tuple>
 # define PI           3.14159265358979323846  /* pi */
-#include "archives.hpp"
+#include "archives\archives.hpp"
 
 class bimodal : public mcmc {
 private:

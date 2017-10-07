@@ -4,7 +4,7 @@
 #include <random>
 #include <tuple>
 #include <vector>
-#include "mc.hpp"
+#include "common\mc.hpp"
 
 class rd : public mc {
 private:

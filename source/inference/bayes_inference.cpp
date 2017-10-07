@@ -2,7 +2,7 @@
 #include <vector>
 #include <tuple>
 #include <chrono>
-#include "inference.hpp"
+#include "inference\inference.hpp"
 
 void generate_observations(std::mt19937 &gen, inference &inst, const int n, dist_type type, double a = 0.0, double b = 1.0) {
 	std::uniform_real_distribution<double> uniform_dist(a, b);
@@ -56,7 +56,7 @@ int main() {
 	lims.push_back(std::pair<double, double>(-10, 20));	// limits of variable 1 ( sigma )
 
 	std::vector<std::triple<dist_type, double, double>> parameter;
-	parameter.push_back(std::triple<dist_type, double, double>(normal, 0, 1));
+	parameter.push_back(std::triple<dist_type, double, double>(uniform, -10, 10));
 	parameter.push_back(std::triple<dist_type, double, double>(uniform, 0, 10));
 
 	inference inst(lims);
@@ -79,5 +79,6 @@ int main() {
 		inst.print_histogram(std::cout, bins, 1);
 		inst.reset();
 	}
+	
 	return 0;
 }

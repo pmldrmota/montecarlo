@@ -1,4 +1,4 @@
-#include "mc.hpp"
+#include "common\mc.hpp"
 
 mc::mc(const unsigned dim) : step_nr(0) {
 	for (int i = 0; i < dim; i++) limits.push_back(std::pair<double, double>(0.0, 1.0));

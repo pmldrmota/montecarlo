@@ -1,7 +1,7 @@
 #ifndef _mcmc_hpp_
 #define _mcmc_hpp_
 
-#include "mc.hpp"
+#include "common\mc.hpp"
 #include <random>
 #include <tuple>
 #include <vector>
@@ -20,6 +20,7 @@ protected:
 	virtual void set_log_p_success();	// calculates log_p_success. has to be specified in inherited class!
 	bool success();	// returns 1 if update is accepted, 0 otherwise. 
 	bool y_inside_space();	// checks if proposed y is inside space
+	void y_mirror_into_space();		// mirrors all coordinates that are outside of the space at the space border
 // update
 	void make_step();				// proposes new position and accepts it if success evaluates to true
 

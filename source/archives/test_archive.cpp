@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "bimodal.hpp"
+#include "bimodal\bimodal.hpp"
 #include "cereal\archives\binary.hpp"
 #include <exception>
 #include <vector>

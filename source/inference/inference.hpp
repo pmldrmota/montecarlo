@@ -1,15 +1,15 @@
 #ifndef _inference_hpp_
 #define _inference_hpp_
 
-#include "mcmc.hpp"
-#include "triple.h"
+#include "common\mcmc.hpp"
+#include "common\triple.h"
 #include <cmath>
 #include <random>
 #include <vector>
 #include <tuple>
 # define PI           3.14159265358979323846  /* pi */
-#include "archives.hpp"
-#include "dist_type.h"
+#include "archives\archives.hpp"
+#include "common\dist_type.h"
 
 class inference : public mcmc {
 private:

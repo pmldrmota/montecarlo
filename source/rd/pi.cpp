@@ -1,5 +1,4 @@
-#include "rd.hpp"
-#include "mc.hpp"
+#include "rd\rd.hpp"
 #include <iostream>
 
 int main() {

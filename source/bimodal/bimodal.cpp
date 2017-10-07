@@ -1,4 +1,4 @@
-#include "bimodal.hpp"
+#include "bimodal\bimodal.hpp"
 
 bimodal::bimodal(const unsigned int dim) : mcmc(dim), proposal_width(1.0) {}
 bimodal::bimodal(const std::vector< std::pair<double, double> > &lims) : mcmc(lims), proposal_width(1.0) {}

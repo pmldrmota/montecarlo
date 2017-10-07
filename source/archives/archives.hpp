@@ -8,7 +8,7 @@
 #include "cereal\types\utility.hpp"
 #include "cereal\types\vector.hpp"
 #include "cereal\types\string.hpp"
-#include "dist_type.h"
+#include "common\dist_type.h"
 
 #include <string>
 #include <vector>

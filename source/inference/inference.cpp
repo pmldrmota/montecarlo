@@ -1,4 +1,4 @@
-#include "inference.hpp"
+#include "inference\inference.hpp"
 
 inference::inference(const unsigned int dim) : mcmc(dim), proposal_width(1.0), dim_data(0) {
 	prior_distributions = std::vector<std::triple<dist_type, double, double>>(dim, std::triple<dist_type, double, double>{uniform, 0, 1});

@@ -1,4 +1,4 @@
-#include "mcmc.hpp"
+#include "common\mcmc.hpp"
 
 mcmc::mcmc(unsigned int dimension) : mc(dimension) {
 	starting_point();
@@ -22,9 +22,8 @@ void mcmc::burn_in(const unsigned int period) {
 	for (int i = 0; i < period; i++) make_step();
 }
 void mcmc::make_step() {
-	do {
-		propose();	// happens somewhere else
-	} while (!y_inside_space());
+	propose();	// happens somewhere else
+	if(!y_inside_space()) y_mirror_into_space();	// if y is not inside the space, mirror it at the limits until it is inside
 	set_log_p_success();	// happens somewhere else
 	if (success()) x = y;
 }
@@ -33,15 +32,25 @@ void mcmc::propose() {
 }
 bool mcmc::y_inside_space() {
 	bool inside{ true };
-	std::pair<double, double> limit;
 	for (int i = 0; i < dim; i++) {
-		limit = limits.at(i);
-		if (y.at(i) < limit.first || y.at(i) > limit.second) {
+		if (y.at(i) < limits.at(i).first || y.at(i) > limits.at(i).second) {
 			inside = false;
 			break;
 		}
 	}
 	return inside;
+}
+void mcmc::y_mirror_into_space() {
+	for (int i = 0; i < dim; i++) {	// iterate over all dimensions
+		do{
+			if (y.at(i) < limits.at(i).first) {	// value at the left outside
+				y.at(i) = 2 * limits.at(i).first - y.at(i);
+			}
+			if (y.at(i) > limits.at(i).second) { // value at the right outside
+				y.at(i) = 2 * limits.at(i).second - y.at(i);
+			}
+		} while (y.at(i) < limits.at(i).first || y.at(i) > limits.at(i).second);	// mirror as often as it is necessary
+	}
 }
 void mcmc::set_log_p_success() {
 	log_p_success = 0;
