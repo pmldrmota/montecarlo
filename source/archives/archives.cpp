@@ -18,11 +18,11 @@ void inference_archive::serialize(Archive & ar) {
 template void inference_archive::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
 template void inference_archive::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);
 
-// bimodal
+// metropolis
 
 template<class Archive>
-void bimodal_archive::serialize(Archive & ar) {
+void metropolis_archive::serialize(Archive & ar) {
 	ar(mcdata, proposal_width); // serialize things by passing them to the archive
 }
-template void bimodal_archive::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
-template void bimodal_archive::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);
+template void metropolis_archive::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
+template void metropolis_archive::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);

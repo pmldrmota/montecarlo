@@ -40,7 +40,7 @@ struct inference_archive {
 	template<class Archive>
 	void serialize(Archive & ar); // serialize things by passing them to the archive
 };
-struct bimodal_archive {
+struct metropolis_archive {
 	/*
 	// for re-construction of mc instance from cereal binary file: use constructor with this 'archive' structure as its argument
 	*/

@@ -1,18 +1,23 @@
 #include <iostream>
 #include <fstream>
-#include "bimodal\bimodal.hpp"
+#include "metropolis\metropolis.hpp"
 #include "cereal\archives\binary.hpp"
 #include <exception>
 #include <vector>
 #include <tuple>
 
+double log_target_distribution(const double &x) {
+	if (x >= -10 && x <= 24) return 0;
+	else return -100;
+	//return -0.2*x*x + std::log(0.3 + 0.7*0.0000000021*std::exp(4 * x));
+}
 
 int main() {
 	{
 		std::vector<std::pair<double, double>> lims;
 		lims.push_back(std::pair<double, double>(-20, 30));	// limits of variable 0
 
-		bimodal inst(lims);
+		metropolis inst(lims, log_target_distribution);
 		inst.set_proposal_width(5);
 		inst.burn_in(500);
 		inst.archivise();
@@ -29,7 +34,7 @@ int main() {
 	{
 		std::ifstream is("backup.bin", std::ios::binary);
 		cereal::BinaryInputArchive iarchive(is); // Create an input archive
-		bimodal_archive saved_archive;
+		metropolis_archive saved_archive;
 		try {
 			iarchive(saved_archive); // Read the data from the archive
 		}
@@ -37,7 +42,7 @@ int main() {
 			std::cerr << ausnahme.what() << std::endl;
 			return 0;
 		}
-		bimodal inst2(saved_archive);
+		metropolis inst2(saved_archive, log_target_distribution);
 
 		std::cout << "step_nr: " << inst2.get_step_nr() << std::endl;
 		inst2.print_x(std::cout);

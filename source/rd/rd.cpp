@@ -11,6 +11,5 @@ void rd::make_step() {
 	for (int i = 0; i < x.size(); i++) x.at(i) = get(i);
 }
 double rd::get(const unsigned int i) {
-	std::pair<double, double> limit = limits.at(i);
-	return limit.first+spans.at(i)*distribution(gen);
+	return limits.at(i).first+spans.at(i)*distribution(gen);
 }

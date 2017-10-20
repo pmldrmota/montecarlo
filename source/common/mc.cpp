@@ -49,11 +49,11 @@ void mc::update() {
 	step_nr++;
 	trace.push_back(x);
 }
-void mc::update(void(*make_step_manually)(std::vector<double>&)) {
+/*void mc::update(void(*make_step_manually)(std::vector<double>&)) {
 	make_step_manually(x);
 	step_nr++;
 	trace.push_back(x);
-}
+}*/
 void mc::make_step() {
 	return;
 }
