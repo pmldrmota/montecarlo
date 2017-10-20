@@ -64,7 +64,7 @@ public:
 	mc(const std::vector< std::pair<double, double> > &lims); // sets dimension to lims.size()
 	mc(mc_archive &ar);	// re-constructs instance of mc from a cereal binary file
 // UPDATE
-	void update();	// makes step (defined in inherited class) and increases step_nr and pushes x back to trace
+	void update();	// calls virtual void make_step (defined in inherited class) and increases step_nr and pushes x back to trace
 // RETURN VARIABLES
 	unsigned dimension();		// returns dim
 	unsigned get_step_nr();		// returns nr_steps
@@ -77,7 +77,7 @@ public:
 	std::vector<double> get_trace(const unsigned i);	// returns i'th position of the trace
 // PRINT FUNCTIONS
 	void print_x(std::ostream &out);	// writes vector to screen
-	void print_histogram(std::ostream &out, const unsigned n_bins, const unsigned var);
+	void print_histogram(std::ostream &out, const unsigned n_bins, const unsigned var);	// writes a histogram onto the console (bins from up to down, bars made up of XXXXXX)
 // VECTOR FUNCTIONS
 	double l2_norm_x();				// calculates l2-norm of x
 // ARCHIVE
@@ -89,7 +89,7 @@ public:
 	double variance(const unsigned var);	// calculates variance of the distribution of var'th variable
 	void reset();	// resets trace and nr_steps, but keeps limits, current x and random seed
 	void write_trace_to_file(std::ofstream &outf);	// writes the trace to a file (given by argument std::ofstream outf)
-	void write_autocorrelation_to_file(std::ofstream &outf, const unsigned max_lag);	// writes k over autocorrelation(k) to a file for subsequent plotting
+	void write_autocorrelation_to_file(std::ofstream &outf, const unsigned max_lag);	// autocorrelation(k) with k=0...max_lag to a file for subsequent plotting
 };
 
 // VECTOR OPERATORS AND FUNCTIONS

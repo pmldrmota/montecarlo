@@ -157,7 +157,7 @@ void mc::write_trace_to_file(std::ofstream &outf) {
 	}
 }
 void mc::write_autocorrelation_to_file(std::ofstream &outf, const unsigned max_lag) {
-	for (int k = 0; k < max_lag; k++) outf << k << "\t" << autocorrelation(k) << std::endl;
+	for (int k = 0; k < max_lag; k++) outf << autocorrelation(k) << std::endl;
 }
 
 std::vector<double> operator*(const std::vector<double>& v, double alfa)
