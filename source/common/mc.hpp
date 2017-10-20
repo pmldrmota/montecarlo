@@ -65,6 +65,7 @@ public:
 	mc(mc_archive &ar);	// re-constructs instance of mc from a cereal binary file
 // UPDATE
 	void update();	// calls virtual void make_step (defined in inherited class) and increases step_nr and pushes x back to trace
+	void update(void(*make_step_manually)(std::vector<double>&));	// calls the function passed through the argument, which receives access to x in order to change x
 // RETURN VARIABLES
 	unsigned dimension();		// returns dim
 	unsigned get_step_nr();		// returns nr_steps

@@ -49,6 +49,11 @@ void mc::update() {
 	step_nr++;
 	trace.push_back(x);
 }
+void mc::update(void(*make_step_manually)(std::vector<double>&)) {
+	make_step_manually(x);
+	step_nr++;
+	trace.push_back(x);
+}
 void mc::make_step() {
 	return;
 }
@@ -82,9 +87,10 @@ std::vector<double> mc::get_trace(const unsigned i) {
 void mc::print_x(std::ostream &out) {
 	if (x.empty()) return;
 	out << "(";
-	for (auto it : x) {
-		out << it;
-		if (it != x.back()) out << ", ";
+	const unsigned size{ x.size() };
+	for (int i = 0; i < size; i++) {
+		out << x.at(i);
+		if (i != size-1) out << ", ";
 	}
 	out << ")" << std::endl;
 }
