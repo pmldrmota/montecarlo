@@ -1,13 +1,23 @@
 #include <iostream>
+#include <stdio.h>			// für Pipe
+#include "Windows.h"
+#include <string>
 #include <vector>
 #include <tuple>
 #include "metropolis\metropolis.hpp"
+extern "C" FILE *_popen(const char *command, const char *mode);
+extern "C" FILE *_pclose(FILE *stream);
 
 double log_target_distribution(const double &x) {
-	if (x >= -10 && x <= 24) return 0;
-	else return -100;
-	//return -0.2*x*x + std::log(0.3 + 0.7*0.0000000021*std::exp(4 * x));
+	return -0.2*x*x + std::log(0.3 + 0.7*0.0000000021*std::exp(4 * x));
 }
+void plot(FILE *pipe, const std::string &filename) {
+	std::string plotstring = "plot '" + filename + "' with lines title '" + filename + "'\n";
+	const char* plotchars = &plotstring[0];
+	fprintf(pipe, plotchars);
+	fflush(pipe);
+}
+
 int main() {
 
 	int max;
@@ -27,13 +37,40 @@ int main() {
 	std::cout << "Verteilung: " << std::endl;
 	inst.print_histogram(std::cout, bins, 0);
 
-	/*std::ofstream autoc("autocorrelation.dat");
-	inst.write_autocorrelation_to_file(autoc, 500);
-	autoc.close();
-
-	std::ofstream pointf("points.dat");
-	inst.write_trace_to_file(pointf);
-	pointf.close();*/
-
+	{
+		std::ofstream autoc("autocorrelation.dat");
+		inst.write_autocorrelation_to_file(autoc, 200);
+		autoc.close();
+	}
+	{
+		std::string filename{ "points.dat" };
+		std::ofstream pointf(filename);
+		inst.write_trace_to_file(pointf);
+		pointf.close();
+	}
+	{
+		std::string filename{ "hist.dat" };
+		std::ofstream histf(filename);
+		inst.write_histogram_to_file(histf, bins, 0);
+		histf.close();
+	}
+	{
+		FILE *pipe = _popen("gnuplot", "w");
+		plot(pipe, "points.dat");
+		system("pause");
+		_pclose(pipe);
+	}
+	{
+		FILE *pipe = _popen("gnuplot", "w");
+		plot(pipe, "hist.dat");
+		system("pause");
+		_pclose(pipe);
+	}
+	{
+		FILE *pipe = _popen("gnuplot", "w");
+		plot(pipe, "autocorrelation.dat");
+		system("pause");
+		_pclose(pipe);
+	}
 	return 0;
 }
