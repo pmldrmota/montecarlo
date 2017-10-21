@@ -1,7 +1,7 @@
 #include "common\mc.hpp"
 
 mc::mc(const unsigned dim) : step_nr(0) {
-	for (int i = 0; i < dim; i++) limits.push_back(std::pair<double, double>(0.0, 1.0));
+	for (int i = 0; i < dim; ++i) limits.push_back(std::pair<double, double>(0.0, 1.0));
 	complement_space_vars();
 	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 	gen.seed(seed);
@@ -13,11 +13,9 @@ mc::mc(const std::vector< std::pair<double, double> > &lims) : step_nr(0), limit
 	gen.seed(seed);
 	x.resize(dim);
 }
-mc::mc(mc_archive &ar) : limits(ar.limits), trace(ar.trace) {
-	x = ar.x;
-	step_nr = trace.size();
+mc::mc(mc_archive &ar) : limits(ar.limits), trace(ar.trace), x(ar.x), step_nr(ar.trace.size()) {
 	complement_space_vars();
-
+	// restore random seed
 	std::stringstream ss;
 	ss.setf(std::ios_base::dec, std::ios_base::basefield);
 	ss << ar.gen_status;
@@ -46,14 +44,15 @@ mc_archive mc::get_mc_archive() {
 
 void mc::update() {
 	make_step();	// happens somewhere else
-	step_nr++;
+	++step_nr;
 	trace.push_back(x);
 }
-/*void mc::update(void(*make_step_manually)(std::vector<double>&)) {
-	make_step_manually(x);
-	step_nr++;
+void mc::update(const std::vector<double> &new_x) {
+	if (new_x.size() != dim) throw std::runtime_error("vector passed to update has wrong dimension");
+	x = new_x;
+	++step_nr;
 	trace.push_back(x);
-}*/
+}
 void mc::make_step() {
 	return;
 }
@@ -88,7 +87,7 @@ void mc::print_x(std::ostream &out) {
 	if (x.empty()) return;
 	out << "(";
 	const unsigned size{ x.size() };
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < size; ++i) {
 		out << x.at(i);
 		if (i != size-1) out << ", ";
 	}
@@ -101,7 +100,7 @@ void mc::print_histogram(std::ostream &out, const unsigned n_bins, const unsigne
 	double span{ spans.at(var) };
 	for (auto it : hist) {
 		std::cout << std::fixed << std::setprecision(2) << a + it.first*span / n_bins << " - " << a + (it.first+1)*span / n_bins << "\t" << it.second << "\t";
-		for (int i = 0; i < (1.0*it.second / max_count) * 25; i++) std::cout << "X";
+		for (int i = 0; i < (1.0*it.second / max_count) * 25; ++i) std::cout << "X";
 		std::cout << std::endl;
 	}
 
@@ -111,9 +110,9 @@ double mc::l2_norm_x() {
 }
 double mc::autocorrelation(const unsigned k) {
 	std::vector<double> mean_trace(dim);
-	for (int d = 0; d < dim; d++) mean_trace.at(d) = expectation(d);
+	for (int d = 0; d < dim; ++d) mean_trace.at(d) = expectation(d);
 	double acsum{ 0.0 };
-	for (int i = 0; i < step_nr - k; i++) acsum += ((trace.at(i) - mean_trace)*(trace.at(i + k) - mean_trace))/step_nr;
+	for (int i = 0; i < step_nr - k; ++i) acsum += ((trace.at(i) - mean_trace)*(trace.at(i + k) - mean_trace))/step_nr;
 	return acsum;
 }
 std::map<unsigned, unsigned> mc::histogram(const unsigned n_bins, const unsigned var) {
@@ -121,7 +120,7 @@ std::map<unsigned, unsigned> mc::histogram(const unsigned n_bins, const unsigned
 	if (var > dim) std::cerr << "the variable passed to histogram is too large" << std::endl;
 	else {
 		std::vector<double> values;
-		for (int i = 0; i < step_nr; i++) {
+		for (int i = 0; i < step_nr; ++i) {
 			values.push_back(trace[i].at(var));
 		}
 		double a{ limits[var].first };
@@ -184,7 +183,7 @@ double operator*(const std::vector<double>& v1, const std::vector<double>& v2)
 		std::cerr << "vectors passed to scalar product * have different sizes." << std::endl;
 		return 0;
 	}
-	for (int i = 0; i < v1.size(); i++) r += v1.at(i)*v2.at(i);
+	for (int i = 0; i < v1.size(); ++i) r += v1.at(i)*v2.at(i);
 	return r;
 }
 std::vector<double> operator+(const std::vector<double>& v1, const std::vector<double>& v2)
@@ -194,7 +193,7 @@ std::vector<double> operator+(const std::vector<double>& v1, const std::vector<d
 		std::cerr << "vectors passed to + have different sizes." << std::endl;
 		return y;
 	}
-	for (int i = 0; i < v1.size(); i++) y.push_back(v1.at(i) + v2.at(i));
+	for (int i = 0; i < v1.size(); ++i) y.push_back(v1.at(i) + v2.at(i));
 	return y;
 }
 std::vector<double> operator-(const std::vector<double>& v1, const std::vector<double>& v2)
@@ -204,7 +203,7 @@ std::vector<double> operator-(const std::vector<double>& v1, const std::vector<d
 		std::cerr << "vectors passed to - have different sizes." << std::endl;
 		return y;
 	}
-	for (int i = 0; i < v1.size(); i++) y.push_back(v1.at(i) - v2.at(i));
+	for (int i = 0; i < v1.size(); ++i) y.push_back(v1.at(i) - v2.at(i));
 	return y;
 }
 double l2_norm(const std::vector<double> &vec) {
