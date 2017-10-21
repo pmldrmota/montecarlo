@@ -20,6 +20,7 @@ struct mc_archive {
 	*/
 	std::string gen_status;
 	std::vector<double> x;
+	unsigned step_nr;
 	std::vector< std::pair<double, double> > limits;
 	std::vector<std::vector<double>> trace;
 	// CEREAL	

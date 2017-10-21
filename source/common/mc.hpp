@@ -90,6 +90,7 @@ public:
 	double variance(const unsigned var);	// calculates variance of the distribution of var'th variable
 	void reset();	// resets trace and nr_steps, but keeps limits, current x and random seed
 	void write_trace_to_file(std::ofstream &outf);	// writes the trace to a file (given by argument std::ofstream outf)
+	void write_histogram_to_file(std::ofstream &outf, const unsigned n_bins, const unsigned var);	// writes histogram data to a file
 	void write_autocorrelation_to_file(std::ofstream &outf, const unsigned max_lag);	// autocorrelation(k) with k=0...max_lag to a file for subsequent plotting
 };
 

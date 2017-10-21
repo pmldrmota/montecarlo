@@ -13,7 +13,7 @@ mc::mc(const std::vector< std::pair<double, double> > &lims) : step_nr(0), limit
 	gen.seed(seed);
 	x.resize(dim);
 }
-mc::mc(mc_archive &ar) : limits(ar.limits), trace(ar.trace), x(ar.x), step_nr(ar.trace.size()) {
+mc::mc(mc_archive &ar) : limits(ar.limits), trace(ar.trace), x(ar.x), step_nr(ar.step_nr) {
 	complement_space_vars();
 	// restore random seed
 	std::stringstream ss;
@@ -39,7 +39,7 @@ mc_archive mc::get_mc_archive() {
 	std::stringstream ss;
 	ss.setf(std::ios_base::dec, std::ios_base::basefield);
 	ss << gen;
-	return mc_archive{ ss.str(), x, limits, trace };
+	return mc_archive{ ss.str(), x, step_nr, limits, trace };
 }
 
 void mc::update() {
@@ -103,7 +103,6 @@ void mc::print_histogram(std::ostream &out, const unsigned n_bins, const unsigne
 		for (int i = 0; i < (1.0*it.second / max_count) * 25; ++i) std::cout << "X";
 		std::cout << std::endl;
 	}
-
 }
 double mc::l2_norm_x() {
 	return l2_norm(x);
@@ -159,6 +158,14 @@ void mc::write_trace_to_file(std::ofstream &outf) {
 
 		outf << line << std::endl;				// write line with coordinates of one point to the file
 		line.clear();
+	}
+}
+void mc::write_histogram_to_file(std::ofstream &outf, const unsigned n_bins, const unsigned var) {
+	std::map<unsigned, unsigned> hist = histogram(n_bins, var);	
+	double a{ limits[var].first };
+	double span{ spans.at(var) };
+	for (auto it : hist) {
+		outf << std::fixed << std::setprecision(3) << a + (2 * it.first - 1)*span / (2 * n_bins) << "\t" << it.second << std::endl;
 	}
 }
 void mc::write_autocorrelation_to_file(std::ofstream &outf, const unsigned max_lag) {
