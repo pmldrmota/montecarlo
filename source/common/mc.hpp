@@ -64,8 +64,8 @@ public:
 	mc(const std::vector< std::pair<double, double> > &lims); // sets dimension to lims.size()
 	mc(mc_archive &ar);	// re-constructs instance of mc from a cereal binary file
 // UPDATE
-	void update();	// calls virtual void make_step (defined in inherited class) and increases step_nr and pushes x back to trace
-	void update(const std::vector<double> &new_x);	// manually set x, increase step_nr and push x back to trace
+	void update(bool traceflag = true);	// calls virtual void make_step (defined in inherited class) and increases step_nr. if traceflag = true, it pushes x back to trace
+	void update(const std::vector<double> &new_x, bool traceflag = true);	// manually set x, increase step_nr and push x back to trace if traceflag = true
 // RETURN VARIABLES
 	unsigned dimension();		// returns dim
 	unsigned get_step_nr();		// returns nr_steps

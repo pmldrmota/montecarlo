@@ -42,16 +42,16 @@ mc_archive mc::get_mc_archive() {
 	return mc_archive{ ss.str(), x, step_nr, limits, trace };
 }
 
-void mc::update() {
+void mc::update(bool traceflag) {
 	make_step();	// happens somewhere else
 	++step_nr;
-	trace.push_back(x);
+	if(traceflag) trace.push_back(x);
 }
-void mc::update(const std::vector<double> &new_x) {
+void mc::update(const std::vector<double> &new_x, bool traceflag) {
 	if (new_x.size() != dim) throw std::runtime_error("vector passed to update has wrong dimension");
 	x = new_x;
 	++step_nr;
-	trace.push_back(x);
+	if(traceflag) trace.push_back(x);	
 }
 void mc::make_step() {
 	return;
