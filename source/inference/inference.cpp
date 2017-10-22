@@ -1,14 +1,14 @@
 #include "inference\inference.hpp"
 
-inference::inference(const unsigned int dim) : mcmc(dim), proposal_width(1.0), dim_data(0) {
+inference::inference(const unsigned int dim, log_model_distribution_PTR log_model_distribution) : mcmc(dim), log_model_distribution(log_model_distribution), proposal_width(1.0), dim_data(0) {
 	prior_distributions = std::vector<std::triple<dist_type, double, double>>(dim, std::triple<dist_type, double, double>{uniform, 0, 1});
 }
-inference::inference(const std::vector< std::pair<double, double> > &lims) : mcmc(lims), proposal_width(1.0), dim_data(0) {
+inference::inference(const std::vector< std::pair<double, double> > &lims, log_model_distribution_PTR log_model_distribution) : mcmc(lims), log_model_distribution(log_model_distribution), proposal_width(1.0), dim_data(0) {
 	for (auto it : limits) {
 		prior_distributions.push_back(std::triple<dist_type, double, double>{uniform, it.first, it.second});
 	}
 }
-inference::inference(inference_archive &ar) : mcmc(ar.mcdata), observations(ar.observations), prior_distributions(ar.prior_distributions), proposal_width(ar.proposal_width) {}
+inference::inference(inference_archive &ar, log_model_distribution_PTR log_model_distribution) : log_model_distribution(log_model_distribution), mcmc(ar.mcdata), observations(ar.observations), prior_distributions(ar.prior_distributions), proposal_width(ar.proposal_width) {}
 
 void inference::archivise() {
 	std::ofstream os("backup.bin", std::ios::binary);
@@ -57,15 +57,11 @@ void inference::add_observation(const std::vector<double> &observation) {
 		else observations.push_back(observation);
 	}
 }
-double inference::log_normal_distribution(const std::vector<double> &data, const std::vector<double> &X) {
-	double mu{ X.at(0) }, wert{ data.at(0) };
-	double sigma = X.at(1);
-	return -std::pow((wert - mu) / sigma, 2) / 2 - 0.9189385332 - std::log(sigma);
-}
+
 double inference::log_likelihood(const std::vector<double> &z) {
 	double likeli{ 0.0 };
 	for (auto obs : observations) {
-		likeli += log_normal_distribution(obs, z);
+		likeli += log_model_distribution(obs, z);
 	}
 	return likeli;
 }

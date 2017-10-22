@@ -39,6 +39,12 @@ void generate_observations(std::mt19937 &gen, inference &inst, const int n, dist
 	}
 }
 
+double log_normal_distribution(const std::vector<double> &data, const std::vector<double> &X) {	// our model!!
+	double mu{ X.at(0) }, wert{ data.at(0) };
+	double sigma = X.at(1);
+	return -std::pow((wert - mu) / sigma, 2) / 2 - 0.9189385332 - std::log(sigma);
+}
+
 int main() {
 	int n;
 	std::cout << "samples: ";
@@ -59,26 +65,23 @@ int main() {
 	parameter.push_back(std::triple<dist_type, double, double>(uniform, -10, 10));
 	parameter.push_back(std::triple<dist_type, double, double>(uniform, 0, 10));
 
-	inference inst(lims);
+	inference inst(lims, log_normal_distribution);
 	inst.set_prior_distributions(parameter);
 	inst.set_proposal_width(3);
 
-	unsigned int bins{ 15 }, mult{ 10 };
+	unsigned int bins{ 15 };
 
-	for (int i = 0; i < n; i++) {
-		if (i != 0) generate_observations(gen, inst, mult, normal, -4, 3);
-		for (int step = 0; step < max; step++) inst.update();
-
-		std::cout << std::endl << mult*i << " samples: " << std::endl << std::endl;
-
-		std::cout << "Verteilung von Mu: " << std::endl;
-		std::cout << "Mittelwert: " << inst.expectation(0) << ", Varianz: " << inst.variance(0) << std::endl;
-		inst.print_histogram(std::cout, bins, 0);
-		std::cout << std::endl << "Verteilung von Sigma: " << std::endl;
-		std::cout << "Mittelwert: " << inst.expectation(1) << ", Varianz: " << inst.variance(1) << std::endl;
-		inst.print_histogram(std::cout, bins, 1);
-		inst.reset();
-	}
+	generate_observations(gen, inst, n, normal, -4, 3);
+	for (int step = 0; step < max; ++step) inst.update();
+	std::cout << std::endl << n << " samples: " << std::endl << std::endl;
+		
+	std::cout << "Verteilung von Mu: " << std::endl;
+	std::cout << "Mittelwert: " << inst.expectation(0) << ", sqrt(Varianz): " << std::sqrt(inst.variance(0)) << std::endl;
+	inst.print_histogram(std::cout, bins, 0);
+	std::cout << std::endl << "Verteilung von Sigma: " << std::endl;
+	std::cout << "Mittelwert: " << inst.expectation(1) << ", sqrt(Varianz): " << std::sqrt(inst.variance(1)) << std::endl;
+	inst.print_histogram(std::cout, bins, 1);
+	inst.reset();
 	
 	return 0;
 }
