@@ -9,7 +9,7 @@
 # define PI           3.14159265358979323846  /* pi */
 #include "archives\archives.hpp"
 
-typedef double(*log_target_distribution_PTR)(const double&);
+typedef double(*log_target_distribution_PTR)(const std::vector<double>&);
 
 class metropolis : public mcmc {
 private:
@@ -22,7 +22,7 @@ private:
 	//this functions needs to be external!
 	log_target_distribution_PTR log_target_distribution;	// target distribution
 
-	void set_log_p_success();
+	void set_log_p_success();	// return log_target_distribution(y) - log_target_distribution(x);
 
 	metropolis_archive get_metropolis_archive();
 

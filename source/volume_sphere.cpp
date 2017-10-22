@@ -2,7 +2,7 @@
 #include "rd\rd.hpp"
 #include <cmath>
 
-double log_target_distribution(const double &x) {
+double log_uniform_distribution(const std::vector<double> &x) {
 	return 0;
 }
 double volume_element(const std::vector<double> &x) {
@@ -18,8 +18,8 @@ int main() {
 	std::cin >> dim;
 	std::cout << "Volume of " << dim << "D-Sphere: " << std::pow(PI, dim / 2.0) / std::tgamma(dim / 2.0 + 1) << std::endl;
 	{
-		metropolis walk(dim, log_target_distribution);
-		walk.set_proposal_width(10);
+		metropolis walk(dim, log_uniform_distribution);
+		walk.set_proposal_width(5);
 		std::cout << "Number of Points for Metropolis Algorithm: ";
 		unsigned N;
 		std::cin >> N;
@@ -28,7 +28,7 @@ int main() {
 			walk.update(false);
 			if (walk.l2_norm_x() <= 1) ++count;
 		}
-		std::cout << "Volume of " << dim << "D-Sphere: " << 1.0*std::pow(2,dim)*count / N << std::endl;
+		std::cout << "Volume of " << dim << "D-Sphere: " << std::pow(2,dim)*(1.0*count) / N << std::endl;
 	}
 	{
 		rd walk(dim);
@@ -40,14 +40,14 @@ int main() {
 			walk.update(false);
 			if (walk.l2_norm_x() <= 1) ++count;
 		}
-		std::cout << "Volume of " << dim << "D-Sphere: " << 1.0*std::pow(2, dim)*count / N << std::endl;
+		std::cout << "Volume of " << dim << "D-Sphere: " << std::pow(2, dim)*(1.0*count) / N << std::endl;
 	}
 	{
 		std::vector<std::pair<double, double>> limits;
 		limits.push_back(std::pair<double, double>{0, 1});
 		for (int i = 0; i < dim-2; ++i) limits.push_back(std::pair<double, double>{0, PI});
-		metropolis spherical(limits, log_target_distribution);
-		spherical.set_proposal_width(10);
+		metropolis spherical(limits, log_uniform_distribution);
+		spherical.set_proposal_width(5);
 		std::cout << "Number of Points for Metropolis Algorithm in Spherical Coordinates: ";
 		unsigned N;
 		std::cin >> N;
