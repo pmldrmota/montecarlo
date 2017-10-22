@@ -11,7 +11,6 @@
 
 typedef double(*log_target_distribution_PTR)(const double&);
 
-
 class metropolis : public mcmc {
 private:
 

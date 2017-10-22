@@ -7,9 +7,7 @@
 #include <tuple>
 
 double log_target_distribution(const double &x) {
-	if (x >= -10 && x <= 24) return 0;
-	else return -100;
-	//return -0.2*x*x + std::log(0.3 + 0.7*0.0000000021*std::exp(4 * x));
+	return -0.2*x*x + std::log(0.3 + 0.7*0.0000000021*std::exp(4 * x));
 }
 
 int main() {
@@ -20,8 +18,8 @@ int main() {
 		metropolis inst(lims, log_target_distribution);
 		inst.set_proposal_width(5);
 		inst.burn_in(500);
+		inst.update();
 		inst.archivise();
-
 		std::cout << "step_nr: " << inst.get_step_nr() << std::endl;
 		inst.print_x(std::cout);
 		inst.update();

@@ -4,4 +4,3 @@
 enum dist_type { uniform, normal, logistic, exponential, chi_squared, lorentz, poisson };
 
 #endif // !_dist_type_h_
-
