@@ -1,0 +1,1 @@
+The make_exe and make_obj programs schould be put outside this folder and run there. Then they will create a subfolder release and a subsubfolder release/obj where all the compiled files will be stored.

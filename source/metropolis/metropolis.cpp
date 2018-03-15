@@ -24,4 +24,4 @@ void metropolis::set_proposal_width(const double w) {
 }
 void metropolis::set_log_p_success() {
 	log_p_success = log_target_distribution(y) - log_target_distribution(x);
-}
+} 

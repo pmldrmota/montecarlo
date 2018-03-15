@@ -1,6 +1,0 @@
-g++ -c -std=c++11 -iquote source/ -O source/common/mc.cpp -o release/obj/mc.o
-g++ -c -std=c++11 -iquote source/ -O source/archives/archives.cpp -o release/obj/archives.o
-g++ -c -std=c++11 -iquote source/ -O source/rd/rd.cpp -o release/obj/rd.o
-g++ -c -std=c++11 -iquote source/ -O source/common/mcmc.cpp -o release/obj/mcmc.o
-g++ -c -std=c++11 -iquote source/ -O source/inference/inference.cpp -o release/obj/inference.o
-g++ -c -std=c++11 -iquote source/ -O source/metropolis/metropolis.cpp -o release/obj/metropolis.o

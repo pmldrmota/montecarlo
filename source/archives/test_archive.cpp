@@ -6,8 +6,8 @@
 #include <vector>
 #include <tuple>
 
-double log_target_distribution(const double &x) {
-	return -0.2*x*x + std::log(0.3 + 0.7*0.0000000021*std::exp(4 * x));
+double log_target_distribution(const std::vector<double> &x) {
+	return -0.2*x[0]*x[0] + std::log(0.3 + 0.7*0.0000000021*std::exp(4 * x[0]));
 }
 
 int main() {

@@ -5,11 +5,12 @@
 #include <vector>
 #include <tuple>
 #include "metropolis\metropolis.hpp"
-extern "C" FILE *_popen(const char *command, const char *mode);
-extern "C" FILE *_pclose(FILE *stream);
 
-double log_target_distribution(const double &x) {
-	return -0.2*x*x + std::log(0.3 + 0.7*0.0000000021*std::exp(4 * x));
+//extern "C" FILE *_popen(const char *command, const char *mode);
+//extern "C" FILE *_pclose(FILE *stream);
+
+double log_target_distribution(const std::vector<double> &x) {
+	return -0.2*x[0]*x[0] + std::log(0.3 + 0.7*0.0000000021*std::exp(4 * x[0]));
 }
 void plot(FILE *pipe, const std::string &filename) {
 	std::string plotstring = "plot '" + filename + "' with lines title '" + filename + "'\n";
