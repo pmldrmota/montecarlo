@@ -13,7 +13,7 @@ template void mc_archive::serialize<cereal::BinaryOutputArchive>(cereal::BinaryO
 
 template<class Archive>
 void inference_archive::serialize(Archive & ar) {
-	ar(mcdata, prior_distributions, observations, proposal_width); // serialize things by passing them to the archive
+	ar(mcdata, prior_distributions, observations, param_attributes, proposal_width); // serialize things by passing them to the archive
 }
 template void inference_archive::serialize<cereal::BinaryInputArchive>(cereal::BinaryInputArchive & archive);
 template void inference_archive::serialize<cereal::BinaryOutputArchive>(cereal::BinaryOutputArchive & archive);

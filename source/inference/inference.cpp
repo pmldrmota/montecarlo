@@ -1,14 +1,21 @@
 #include "inference\inference.hpp"
 
 inference::inference(const unsigned int dim, log_model_distribution_PTR log_model_distribution) : mcmc(dim), log_model_distribution(log_model_distribution), proposal_width(1.0), dim_data(0) {
-	prior_distributions = std::vector<std::triple<dist_type, double, double>>(dim, std::triple<dist_type, double, double>{uniform, 0, 1});
+	param_attributes = std::vector<param_type>(dim, linear);
+	prior_distributions = std::vector<std::tuple<dist_type, double, double>>(dim, std::tuple<dist_type, double, double>{uniform, 0, 1});
 }
 inference::inference(const std::vector< std::pair<double, double> > &lims, log_model_distribution_PTR log_model_distribution) : mcmc(lims), log_model_distribution(log_model_distribution), proposal_width(1.0), dim_data(0) {
+	param_attributes = std::vector<param_type>(dim, linear);
 	for (auto it : limits) {
-		prior_distributions.push_back(std::triple<dist_type, double, double>{uniform, it.first, it.second});
+		prior_distributions.push_back(std::tuple<dist_type, double, double>{uniform, it.first, it.second});
 	}
 }
-inference::inference(inference_archive &ar, log_model_distribution_PTR log_model_distribution) : log_model_distribution(log_model_distribution), mcmc(ar.mcdata), observations(ar.observations), prior_distributions(ar.prior_distributions), proposal_width(ar.proposal_width) {}
+inference::inference(inference_archive &ar, log_model_distribution_PTR log_model_distribution) : log_model_distribution(log_model_distribution), mcmc(ar.mcdata), observations(ar.observations), prior_distributions(ar.prior_distributions), param_attributes(ar.param_attributes), proposal_width(ar.proposal_width) {}
+
+void inference::set_param_attributes(const std::vector<param_type> &types){
+	if (types.size() != dim) std::cerr << "param types vector has wrong dimension" << std::endl;
+	param_attributes = types;
+}
 
 void inference::archivise() {
 	std::ofstream os("backup.bin", std::ios::binary);
@@ -16,10 +23,10 @@ void inference::archivise() {
 	oarchive(get_inference_archive());	// Archivate the mc_archive
 }
 inference_archive inference::get_inference_archive() {
-	return inference_archive{ get_mc_archive(), prior_distributions, observations, proposal_width };
+	return inference_archive{ get_mc_archive(), prior_distributions, observations, param_attributes, proposal_width };
 }
 
-void inference::set_prior_distributions(const std::vector<std::triple<dist_type, double, double>> &pridist) {
+void inference::set_prior_distributions(const std::vector<std::tuple<dist_type, double, double>> &pridist) {
 	if (pridist.size() != dim) std::cerr << "prior distribution settings have wrong dimension" << std::endl;
 	else prior_distributions = pridist;
 }
@@ -27,7 +34,19 @@ double inference::get_std_normal_1d() {
 	return gauss(gen);
 }
 void inference::propose() {
-	for (int i = 0; i < dim; i++) y.at(i) = x.at(i) + get_std_normal_1d()*proposal_width*spans.at(i) / 100;
+	for (int i = 0; i < dim; i++) {
+		y.at(i) = x.at(i) + get_std_normal_1d()*proposal_width*spans.at(i) / 100;
+
+		if(param_attributes.at(i) == periodic) {
+			if (y.at(i) < limits.at(i).first || y.at(i) > limits.at(i).second) { // and if it is ouside the limits
+				// wrap it around the limits (https://stackoverflow.com/questions/11980292/how-to-wrap-around-a-range)
+				double y_norm = (y.at(i) - limits.at(i).first) / spans.at(i);
+				double m_norm = std::fmod(y_norm, 1.0);
+				if(m_norm < 0.0) m_norm += 1.0;
+				y.at(i) = spans.at(i) * m_norm + limits.at(i).first;
+			}
+		}
+	}
 }
 void inference::set_proposal_width(const double w) {
 	proposal_width = w;
@@ -66,11 +85,11 @@ double inference::log_likelihood(const std::vector<double> &z) {
 	return likeli;
 }
 double inference::log_prior_distribution(const unsigned int d, const double wert) {
-	std::triple<dist_type, double, double> param{ prior_distributions.at(d) };
+	std::tuple<dist_type, double, double> param{ prior_distributions.at(d) };
 
 	switch (param.first)
 	{
-	case uniform: 
+	case uniform:
 		// param.second = lower boundary, param.third = upper boundary
 		if (wert < param.second || wert > param.third) return -200;	// extremely unlikely
 		else return std::log(1/(param.third - param.second));	// uniform probability

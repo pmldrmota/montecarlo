@@ -23,7 +23,7 @@ struct mc_archive {
 	unsigned step_nr;
 	std::vector< std::pair<double, double> > limits;
 	std::vector<std::vector<double>> trace;
-	// CEREAL	
+	// CEREAL
 	template<class Archive>
 	void serialize(Archive & ar); // serialize things by passing them to the archive
 };
@@ -34,10 +34,11 @@ struct inference_archive {
 	mc_archive mcdata;
 
 	std::vector<std::triple<dist_type, double, double>> prior_distributions;
+	std::vector<param_type> param_attributes;
 	std::vector<std::vector<double>> observations;
 	double proposal_width;
 
-	// CEREAL	
+	// CEREAL
 	template<class Archive>
 	void serialize(Archive & ar); // serialize things by passing them to the archive
 };
@@ -49,7 +50,7 @@ struct metropolis_archive {
 
 	double proposal_width;
 
-	// CEREAL	
+	// CEREAL
 	template<class Archive>
 	void serialize(Archive & ar); // serialize things by passing them to the archive
 };
