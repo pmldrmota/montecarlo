@@ -1,4 +1,4 @@
-#include "common\mcmc.hpp"
+#include "common/mcmc.hpp"
 
 mcmc::mcmc(unsigned int dimension) : mc(dimension) {
 	starting_point();
@@ -23,7 +23,6 @@ void mcmc::burn_in(const unsigned int period) {
 }
 void mcmc::make_step() {
 	propose();	// happens somewhere else
-	if(!y_inside_space()) y_mirror_into_space();	// if y is not inside the space, mirror it at the limits until it is inside
 	set_log_p_success();	// happens somewhere else
 	if (success()) x = y;
 }
@@ -40,22 +39,11 @@ bool mcmc::y_inside_space() {
 	}
 	return inside;
 }
-void mcmc::y_mirror_into_space() {
-	for (int i = 0; i < dim; i++) {	// iterate over all dimensions
-		do{
-			if (y.at(i) < limits.at(i).first) {	// value at the left outside
-				y.at(i) = 2 * limits.at(i).first - y.at(i);
-			}
-			if (y.at(i) > limits.at(i).second) { // value at the right outside
-				y.at(i) = 2 * limits.at(i).second - y.at(i);
-			}
-		} while (y.at(i) < limits.at(i).first || y.at(i) > limits.at(i).second);	// mirror as often as it is necessary
-	}
-}
 void mcmc::set_log_p_success() {
 	log_p_success = 0;
 }
 bool mcmc::success() {
+	if (!y_inside_space()) return false;	// if the proposal is outside the given limits, we reject it straight away (this corresponds to a prior probability of 0 outside the limits)
 	if (log_p_success >= 0 || (uniform_dist(gen) < std::exp(log_p_success))) return true;	// shortcut property: exp(log_p_succ) can never overflow, because it is only evaluated if log_p_success >= 0
 	else return false;
 }

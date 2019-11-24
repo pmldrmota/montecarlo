@@ -10,11 +10,12 @@
 // - a random number generator
 // - autocorrelation function that computes the value of autocorrelation of the trace with user-defined lag
 // - function that calculates the l2-norm of the current x
+// - statistical treatment of trace
 //
 // does not contain any update mechanism!
 //
 //----------
-// Author: Peter Drmota, BSc
+// Author: Peter Drmota, MSc
 // ----------
 */
 #ifndef _mc_hpp_
@@ -53,10 +54,12 @@ protected:
 	unsigned step_nr;	// number of steps already done
 	std::vector<double> x;	// contains current position
 	std::vector<std::vector<double>> trace;	// contains all positions since construction
+// INTERNAL ALGORITHMS
+	double halfsample(const std::vector<double> &x, const std::pair<unsigned, unsigned> range) const;	// recursive function that returns the mode eventually
 // RANDOM GENERATOR VARIABLES
 	std::mt19937 gen;		// random number generator needed for all distributions
 // ARCHIVE
-	mc_archive get_mc_archive();
+	mc_archive get_mc_archive() const;
 
 public:
 // CONSTRUCTOR
@@ -67,31 +70,36 @@ public:
 	void update(bool traceflag = true);	// calls virtual void make_step (defined in inherited class) and increases step_nr. if traceflag = true, it pushes x back to trace
 	void update(const std::vector<double> &new_x, bool traceflag = true);	// manually set x, increase step_nr and push x back to trace if traceflag = true
 // RETURN VARIABLES
-	unsigned dimension();		// returns dim
-	unsigned get_step_nr();		// returns nr_steps
-	std::pair<double, double> get_limits(const unsigned d);	// return limits of dimension d
-	double get_span(const unsigned d);	// return span of dimension d
-	double get_volume();	// returns volume
-	std::vector<double> get_x();	// returns x
-	double get_x(const unsigned pos);	// returns pos'th element of x
-	std::vector<std::vector<double>> get_trace();	// returns trace
-	std::vector<double> get_trace(const unsigned i);	// returns i'th position of the trace
+	unsigned dimension() const;		// returns dim
+	unsigned get_step_nr() const;		// returns nr_steps
+	std::pair<double, double> get_limits(const unsigned d) const;	// return limits of dimension d
+	double get_span(const unsigned d) const;	// return span of dimension d
+	double get_volume() const;	// returns volume
+	std::vector<double> get_x() const;	// returns x
+	double get_x(const unsigned pos) const;	// returns pos'th element of x
+	std::vector<std::vector<double>> get_trace() const;	// returns trace
+	std::vector<double> get_trace(const unsigned i) const;	// returns i'th position of the trace
 // PRINT FUNCTIONS
-	void print_x(std::ostream &out);	// writes vector to screen
-	void print_histogram(std::ostream &out, const unsigned n_bins, const unsigned var);	// writes a histogram onto the console (bins from up to down, bars made up of XXXXXX)
+	void print_x(std::ostream &out) const;	// writes vector to screen
+	void print_histogram(std::ostream &out, const unsigned n_bins, const unsigned var) const;	// writes a histogram onto the console (bins from up to down, bars made up of XXXXXX)
 // VECTOR FUNCTIONS
-	double l2_norm_x();				// calculates l2-norm of x
+	double l2_norm_x() const;				// calculates l2-norm of x
 // ARCHIVE
 	virtual void archivise();
 // DIAGNOSTIC AO FUNCTIONS
-	double autocorrelation(const unsigned k);		// evaluates the empirical autocorrelation of the trace with lag k
-	std::map<unsigned, unsigned> histogram(const unsigned n_bins, const unsigned var);	// returns a histogram with bins numerated from 0 == [a,a+span/n_bins] to n_bins == [b-span/n_bins,b]
-	double expectation(const unsigned var);	// calculates expectation value of the distribution of var'th variable
-	double variance(const unsigned var);	// calculates variance of the distribution of var'th variable
+	double autocorrelation(const unsigned k) const;		// evaluates the empirical autocorrelation of the trace with lag k
+	std::map<unsigned, unsigned> histogram(const unsigned n_bins, const unsigned var) const;	// returns a histogram with bins numerated from 0 == [a,a+span/n_bins] to n_bins == [b-span/n_bins,b]
+	std::map<std::pair<unsigned, unsigned>, unsigned> histogram(const std::pair<unsigned, unsigned> n_bins, const std::pair<unsigned, unsigned> vars) const;
+	double expectation(const unsigned var) const;	// calculates expectation value of the distribution of var'th variable
+	double variance(const unsigned var) const;	// calculates variance of the distribution of var'th variable
+	double covariance(const unsigned var1, const unsigned var2) const; 	// calculates covariance of the distribution of var1'th and var2'th variables
+	double mode(const unsigned var) const;	// calculates the marginal mode of the distribution of var'th variable
+	double median(const unsigned var) const;	// calculates the marginal median of the distribution of var'th variable
 	void reset();	// resets trace and nr_steps, but keeps limits, current x and random seed
-	void write_trace_to_file(std::ofstream &outf);	// writes the trace to a file (given by argument std::ofstream outf)
+	void write_trace_to_file(std::ofstream &outf) const;	// writes the trace to a file (given by argument std::ofstream outf)
 	void write_histogram_to_file(std::ofstream &outf, const unsigned n_bins, const unsigned var);	// writes histogram data to a file
-	void write_autocorrelation_to_file(std::ofstream &outf, const unsigned max_lag);	// autocorrelation(k) with k=0...max_lag to a file for subsequent plotting
+	void write_histogram_to_file(std::ofstream &outf, const std::pair<unsigned, unsigned> n_bins, const std::pair<unsigned, unsigned> vars);
+	void write_autocorrelation_to_file(std::ofstream &outf, const unsigned max_lag) const;	// autocorrelation(k) with k=0...max_lag to a file for subsequent plotting
 };
 
 // VECTOR OPERATORS AND FUNCTIONS
