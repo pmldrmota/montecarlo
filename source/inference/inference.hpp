@@ -1,14 +1,14 @@
 #ifndef _inference_hpp_
 #define _inference_hpp_
 
-#include "mcmc.hpp"
+#include "common/mcmc.hpp"
 #include <cmath>
 #include <random>
 #include <vector>
 #include <tuple>
 # define PI           3.14159265358979323846  /* pi */
-#include "archives.hpp"
-#include "dist_type.h"
+#include "archives/archives.hpp"
+#include "common/dist_type.h"
 
 typedef double(*log_model_distribution_PTR)(const std::vector<double>&, const std::vector<double>&);
 

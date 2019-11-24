@@ -42,7 +42,7 @@ void generate_observations(std::mt19937 &gen, inference &inst, const int n, dist
 double log_normal_distribution(const std::vector<double> &data, const std::vector<double> &X) {	// our model!!
 	double mu{ X.at(0) }, wert{ data.at(0) };
 	double sigma = X.at(1);
-	return -std::pow((wert - mu) / sigma, 2) / 2 - 0.9189385332 - std::log(sigma);
+	return -std::pow((wert - mu) / sigma, 2) / 2 - 0.91893853320467274 - std::log(sigma);
 }
 
 int main() {
@@ -54,16 +54,16 @@ int main() {
 	std::cout << "steps: ";
 	std::cin >> max;
 
-	std::mt19937 gen;
+	std::mt19937 gen; // generate a random seed based on current time
 	gen.seed(std::chrono::system_clock::now().time_since_epoch().count());
 
 	std::vector<std::pair<double, double>> lims;
 	lims.push_back(std::pair<double, double>(-20, 20));	// limits of variable 0 ( mu )
 	lims.push_back(std::pair<double, double>(-10, 20));	// limits of variable 1 ( sigma )
 
-	std::vector<std::triple<dist_type, double, double>> parameter;
-	parameter.push_back(std::triple<dist_type, double, double>(uniform, -10, 10));
-	parameter.push_back(std::triple<dist_type, double, double>(uniform, 0, 10));
+	std::vector<std::tuple<dist_type, double, double>> parameter;
+	parameter.push_back(std::tuple<dist_type, double, double>(uniform, -10, 10));
+	parameter.push_back(std::tuple<dist_type, double, double>(uniform, 0, 10));
 
 	inference inst(lims, log_normal_distribution);
 	inst.set_prior_distributions(parameter);
@@ -74,7 +74,7 @@ int main() {
 	generate_observations(gen, inst, n, normal, -4, 3);
 	for (int step = 0; step < max; ++step) inst.update();
 	std::cout << std::endl << n << " samples: " << std::endl << std::endl;
-		
+
 	std::cout << "Verteilung von Mu: " << std::endl;
 	std::cout << "Mittelwert: " << inst.expectation(0) << ", sqrt(Varianz): " << std::sqrt(inst.variance(0)) << std::endl;
 	inst.print_histogram(std::cout, bins, 0);
@@ -82,6 +82,6 @@ int main() {
 	std::cout << "Mittelwert: " << inst.expectation(1) << ", sqrt(Varianz): " << std::sqrt(inst.variance(1)) << std::endl;
 	inst.print_histogram(std::cout, bins, 1);
 	inst.reset();
-	
+
 	return 0;
 }

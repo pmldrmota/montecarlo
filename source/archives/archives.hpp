@@ -6,6 +6,7 @@
 
 #include "cereal\archives\binary.hpp"
 #include "cereal\types\utility.hpp"
+#include "cereal\types\tuple.hpp"
 #include "cereal\types\vector.hpp"
 #include "cereal\types\string.hpp"
 #include "common\dist_type.h"
@@ -33,9 +34,9 @@ struct inference_archive {
 	*/
 	mc_archive mcdata;
 
-	std::vector<std::triple<dist_type, double, double>> prior_distributions;
-	std::vector<param_type> param_attributes;
+	std::vector<std::tuple<dist_type, double, double>> prior_distributions;
 	std::vector<std::vector<double>> observations;
+	std::vector<param_type> param_attributes;
 	double proposal_width;
 
 	// CEREAL

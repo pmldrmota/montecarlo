@@ -87,34 +87,34 @@ double inference::log_likelihood(const std::vector<double> &z) {
 double inference::log_prior_distribution(const unsigned int d, const double wert) {
 	std::tuple<dist_type, double, double> param{ prior_distributions.at(d) };
 
-	switch (param.first)
+	switch (std::get<0>(param))
 	{
 	case uniform:
-		// param.second = lower boundary, param.third = upper boundary
-		if (wert < param.second || wert > param.third) return -200;	// extremely unlikely
-		else return std::log(1/(param.third - param.second));	// uniform probability
+		// std::get<1>(param) = lower boundary, std::get<2>(param) = upper boundary
+		if (wert < std::get<1>(param) || wert > std::get<2>(param)) return -200;	// extremely unlikely
+		else return std::log(1/(std::get<2>(param) - std::get<1>(param)));	// uniform probability
 		break;
 	case normal:
-		// param.second = mu, param.third = sigma
-		return -std::pow((wert - param.second) / param.third, 2) / 2 - 0.9189385332 - std::log(param.third);
+		// std::get<1>(param) = mu, std::get<2>(param) = sigma
+		return -std::pow((wert - std::get<1>(param)) / std::get<2>(param), 2) / 2 - 0.9189385332 - std::log(std::get<2>(param));
 		break;
 	case logistic:
-		// param.second = mu, param.third = s
-		return -2 * std::log(std::cosh((wert - param.second) / (2 * param.third))) - 1.3862943611 - std::log(param.third);
+		// std::get<1>(param) = mu, std::get<2>(param) = s
+		return -2 * std::log(std::cosh((wert - std::get<1>(param)) / (2 * std::get<2>(param)))) - 1.3862943611 - std::log(std::get<2>(param));
 	case exponential:
-		// param.second = lambda
-		if(wert >= 0) return -param.second * wert + std::log(param.second);
+		// std::get<1>(param) = lambda
+		if(wert >= 0) return -std::get<1>(param) * wert + std::log(std::get<1>(param));
 		else return -200;
 	case chi_squared:
-		// param.second = n
-		if (wert > 0) return -wert / 2 - param.second*0.3465735903 - std::lgamma(param.second / 2) + (param.second / 2 - 1)*std::log(wert);
+		// std::get<1>(param) = n
+		if (wert > 0) return -wert / 2 - std::get<1>(param)*0.3465735903 - std::lgamma(std::get<1>(param) / 2) + (std::get<1>(param) / 2 - 1)*std::log(wert);
 		else return -200;
 	case lorentz:
-		// param.second = s, param.third = t
-		return -1.1447298858 + std::log(param.second) - std::log(param.second*param.second + std::pow(wert - param.third, 2));
+		// std::get<1>(param) = s, std::get<2>(param) = t
+		return -1.1447298858 + std::log(std::get<1>(param)) - std::log(std::get<1>(param)*std::get<1>(param) + std::pow(wert - std::get<2>(param), 2));
 	case poisson:
-		// param.second = lambda
-		return -param.second - std::lgamma(wert + 1) + wert*std::log(param.second);
+		// std::get<1>(param) = lambda
+		return -std::get<1>(param) - std::lgamma(wert + 1) + wert*std::log(std::get<1>(param));
 	}
 }
 double inference::log_prior_p(const std::vector<double> &z) {
