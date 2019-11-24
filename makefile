@@ -1,4 +1,7 @@
-all: test.exe test_archive.exe bayes_inference.exe volume_sphere.exe pi.exe integrate.exe bimodal_walk.exe
+all: test.exe test_archive.exe bayes_inference.exe volume_sphere.exe pi.exe integrate.exe bimodal_walk.exe harmonic_oscillator.exe
+
+harmonic_oscillator.exe: source/harmonic_oscillator.cpp metropolis.o mc.o rd.o mcmc.o archives.o
+	g++ -std=c++11 -iquote source/ -O $^ -o $@
 
 test.exe: source/test.cpp archives.o mc.o rd.o mcmc.o inference.o metropolis.o
 	g++ -std=c++11 -iquote source/ -O $^ -o $@
